@@ -73,6 +73,9 @@
         "valarray": "cpp",
         "codecvt": "cpp",
         "alignedvector3": "cpp",
-        "filesystem": "cpp"
-    }
+        "filesystem": "cpp",
+        "*.expression": "cpp",
+        "fft": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

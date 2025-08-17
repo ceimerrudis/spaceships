@@ -4,7 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "dependencies/eigen-3.4.0/*"
+                "dependencies/eigen-3.4.0/*",
+                "${workspaceFolder}/src/structures",
+                "${workspaceFolder}/src/norends"
             ],
             "defines": [
                 "_DEBUG",

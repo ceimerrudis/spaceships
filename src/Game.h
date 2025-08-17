@@ -15,6 +15,7 @@
 #include <array>
 #include "Spaceship.h"
 #include "Camera.h"
+#include "Collider.h"
 #include "ShaderManaging.h"
 #include "WorldObject.h"
 #include "advancedMath.h"
@@ -25,31 +26,43 @@
 #include "GlyphCache.h"
 #include "CubemapObject.h"
 #include "Shader.h"
+#include "PhysicsSystem.h"
 #include "ModelObject.h"
 #include "TextObject.h"
 #include "TextureManager.h"
+#include "DebugDraw.h"
 #include "OpenGLResourceLibrary.h"
+#include "Remotery.h"
+#include "Debugger.h"
+#include "Asteroid.h"
+#include "Renderer.h"
 
 using std::unique_ptr;
 using std::shared_ptr;
+using std::weak_ptr;
 
 class Game{
 private:
+    unique_ptr<OpenGLResourceLibrary> glResLib;
+    unsigned int currentNextId;
+    unique_ptr<Renderer> renderer;
     unique_ptr<AssetLoader> assetLoader;
     unique_ptr<GlyphCache> glyphCache;
-    unique_ptr<OpenGLResourceLibrary> glResLib;
-    std::shared_ptr<TextureManager> textureManager;
     unique_ptr<InputSystem> inputSystem;
+    shared_ptr<TextureManager> textureManager;
+    shared_ptr<PhysicsSystem> physicsSystem;
 
-    std::shared_ptr<Shader> textShaders;
-    std::shared_ptr<Shader> imageShaders;
-    std::shared_ptr<Shader> d3ObjectShaders;
-    std::shared_ptr<Shader> skyboxShaders;
+    shared_ptr<Shader> textShaders;
+    shared_ptr<Shader> imageShaders;
+    shared_ptr<Shader> d3ObjectShaders;
+    shared_ptr<Shader> skyboxShaders;
 
     unique_ptr<Camera> cameraUsed;
-    std::vector<std::unique_ptr<Spaceship>> spaceShips;
+    std::vector<shared_ptr<Spaceship>> spaceShips;
+    std::vector<shared_ptr<Asteroid>> asteroids;
     std::vector<TextObject> texts;
     int playerId;
+    bool cursorCaptured;
 
     GLFWwindow* window;
 public:
@@ -58,4 +71,16 @@ public:
     ~Game();
 
     bool Update();
+
+    void ShootLaser(Ray fireRay);
+
+    weak_ptr<Spaceship> GetSpaceShip(unsigned int id);
+
+    void DebugDrawLine(vector3 origin, vector3 direction, matrix4 translation, vector3 color = {1, 0, 0});
+
+    void DebugDrawCollider(Collider col, matrix4 translation, vector3 color = {1, 0, 0});
+
+    void DebugDrawPoint(vector3 pos, matrix4 translation, vector3 color = {1, 0, 0});
+
+    void KillSpaceship(unsigned int entityId);
 };

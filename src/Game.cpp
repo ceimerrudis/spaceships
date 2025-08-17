@@ -2,18 +2,25 @@
 #include <stb_image.h>
 #include "Game.h"
 
+using std::unique_ptr;
+using std::shared_ptr;
+using std::weak_ptr;
+
+void MakeDebutgDataFromCiollider(Collider col, std::vector<float>* vert, std::vector<unsigned int>* ind);
+
 Game::Game()
 {
+    currentNextId = 1;
     assetLoader = std::make_unique<AssetLoader>(); 
     glyphCache = std::make_unique<GlyphCache>(*assetLoader);
     //Move variables out
     int cockpitImage = assetLoader->LoadImage("cockpit.png");
-    int skyboxImageTop = assetLoader->LoadImage("skybox_top.png");
-    int skyboxImageLeft = assetLoader->LoadImage("skybox_left.png");
-    int skyboxImageMiddle = assetLoader->LoadImage("skybox_middle.png");
-    int skyboxImageRight = assetLoader->LoadImage("skybox_right.png");
-    int skyboxImageFarRight = assetLoader->LoadImage("skybox_far_right.png");
-    int skyboxImageBottom = assetLoader->LoadImage("skybox_bottom.png");
+    int skyboxImageRight    = assetLoader->LoadImage("skybox2_c00.bmp");//right +x
+    int skyboxImageLeft     = assetLoader->LoadImage("skybox2_c01.bmp");//left -x
+    int skyboxImageTop      = assetLoader->LoadImage("skybox2_c02.bmp");//top +y
+    int skyboxImageBottom   = assetLoader->LoadImage("skybox2_c03.bmp");//bottom -y
+    int skyboxImageFarRight = assetLoader->LoadImage("skybox2_c05.bmp");//far_right +z
+    int skyboxImageMiddle   = assetLoader->LoadImage("skybox2_c04.bmp");//middle -z
 
     assetLoader->LoadObject("spaceship.obj");
     assetLoader->LoadObject("cube.obj");
@@ -23,6 +30,8 @@ Game::Game()
 
     window = CreateWindow("spaceships");
     InitGlad();
+    cursorCaptured = true;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     glResLib = std::make_unique<OpenGLResourceLibrary>();;
     
@@ -37,15 +46,12 @@ Game::Game()
     //image shaders end
 
     //D3 object shaders
-    d3ObjectShaders = LoadShader("vertex.glsl", "fragment.glsl", *glResLib);
+    d3ObjectShaders = LoadShader("d3_vertex.glsl", "d3_fragment.glsl", *glResLib);
     d3ObjectShaders->AddUniform(D3_WORLD_TRANSFORM, "u_worldPlaneTransf", UniformType::Mat4);
     d3ObjectShaders->AddUniform(D3_OBSERVER_PLANE, "u_observerPlane", UniformType::Mat4);
     d3ObjectShaders->AddUniform(D3_VIEW_POSITION, "u_viewPos", UniformType::Vec3);
     d3ObjectShaders->AddUniform(D3_LIGHT_DIRECTION, "u_lightDirection", UniformType::Vec3);
     d3ObjectShaders->AddUniform(D3_PROJECTION_MATRIX, "u_projMatrix", UniformType::Mat4);
-
-    float lightDirection[3] = {0.468521, 0.624695, -0.624695};
-    d3ObjectShaders->AssignDataToUniform(D3_LIGHT_DIRECTION, lightDirection);
     //D3 object shaders end
 
     //Skybox shaders
@@ -53,10 +59,10 @@ Game::Game()
     skyboxShaders->AddUniform(SKYBOX_VIEW_MATRIX, "u_view", UniformType::Mat4);
     skyboxShaders->AddUniform(SKYBOX_TEXTURE_SLOT, "u_skybox", UniformType::Int);
     skyboxShaders->AddUniform(SKYBOX_PROJECTION_MATRIX, "u_projection", UniformType::Mat4);
-
-    
     //Skybox shaders end
-    spaceShips.emplace_back(std::make_unique<Spaceship>(assetLoader->meshes[0], d3ObjectShaders, *glResLib));
+
+    physicsSystem = std::make_shared<PhysicsSystem>();
+    spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
 
     playerId = spaceShips.size() - 1;
     spaceShips[playerId]->isPlayer = true;
@@ -66,12 +72,15 @@ Game::Game()
     d3ObjectShaders->AssignDataToUniform(D3_PROJECTION_MATRIX,   (cameraUsed->projectionMatrix).data);
     skyboxShaders->AssignDataToUniform(SKYBOX_PROJECTION_MATRIX, (cameraUsed->projectionMatrix).data);
 
-    spaceShips.emplace_back(std::make_unique<Spaceship>(assetLoader->meshes[0], d3ObjectShaders, *glResLib));
-    spaceShips.emplace_back(std::make_unique<Spaceship>(assetLoader->meshes[0], d3ObjectShaders, *glResLib));
-    
-    textureManager = std::make_unique<TextureManager>(*assetLoader, *glResLib);
+    spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
+    spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
+    spaceShips[2]->position = {10, 10, 4};
 
-    CubemapObject* skybox = new CubemapObject(assetLoader->meshes[1], skyboxShaders, std::array<TaggedTextureResource*, 6>
+    textureManager = std::make_shared<TextureManager>(*assetLoader, *glResLib);
+    renderer = std::make_unique<Renderer>(textureManager);
+    renderer->SetLightDirection({0.468521, 0.624695, -0.624695});
+
+    cameraUsed->skybox = std::make_unique<CubemapObject>(assetLoader->meshes[1], skyboxShaders, std::array<TaggedTextureResource*, 6>
         {
             &assetLoader->GetResource(skyboxImageRight),
             &assetLoader->GetResource(skyboxImageLeft),
@@ -81,83 +90,122 @@ Game::Game()
             &assetLoader->GetResource(skyboxImageFarRight),
         }
         , textureManager, *glResLib);
-    TextObject* throttleText = new TextObject(*glResLib, textShaders, "THRTL:",
+    
+    //texts.emplace_back(*glResLib, textShaders, "FPS:", 28, vector2{0, 0}, vector3{1, 0, 0}, textureManager, *glyphCache);
+
+    cameraUsed->throttleText = std::make_unique<TextObject>(*glResLib, textShaders, 
          28, //size
          vector2{-0.60, -0.75}, //position
          vector3{0.6, 0.6, 0},//direction
-          textureManager, *glyphCache);
-    D2Object* cockpit = new D2Object(imageShaders, vector2{-1, -1}, vector2{1, 1}, assetLoader->GetResource(cockpitImage),
-     textureManager, *glResLib);
+           *glyphCache);
+    cameraUsed->PosText = std::make_unique<TextObject>(*glResLib, textShaders, 
+         28, //size
+         vector2{-0.30, -0.8}, //position
+         vector3{1, 0, 0},//direction
+           *glyphCache);
+    cameraUsed->RotText = std::make_unique<TextObject>(*glResLib, textShaders, 
+         28, //size
+         vector2{-0.30, -0.6}, //position
+         vector3{1, 0, 0},//direction
+           *glyphCache);
+    cameraUsed->cockpit = std::make_unique<D2Object>(imageShaders, vector2{-1, -1}, vector2{1, 1}, assetLoader->GetResource(cockpitImage), textureManager, *glResLib);
 
-    cameraUsed->children.push_back(throttleText);
-    cameraUsed->throttleText = cameraUsed->children.size() - 1;
-    cameraUsed->children.push_back(cockpit);
-    cameraUsed->cockpit = cameraUsed->children.size() - 1;
-    cameraUsed->children.push_back(skybox);
-    cameraUsed->skybox = cameraUsed->children.size() - 1;
-    
+    for(int i = 0; i < 1; i++)
+    {
+        asteroids.emplace_back(std::make_shared<Asteroid>(currentNextId++, d3ObjectShaders, *glResLib, *physicsSystem));
+    }
+
     //OpenGl uzstādījumi
     GL(glEnable(GL_BLEND));
     GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     GL(glEnable(GL_DEPTH_TEST));//Ieslēdzam automātiski izveidoto dziļuma tekstūru
     GL(glDepthFunc(GL_LESS));//Dod priekšroku punktiem ar mazāku z vērtību
     GL(glEnable(GL_CULL_FACE));
-    GL(glFrontFace(GL_CCW));
-    GL(glPolygonMode(GL_FRONT, GL_FILL));//Aizpildām figūras
-    GL(glClearColor(1.0f, 0.0f, 1.0f, 1.0f));
+    GL(glFrontFace(GL_CW));
+    GL(glPolygonMode(GL_FRONT, GL_FILL));//Aizpildām figūras GL_FILL GL_LINE
+    GL(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
 
-    inputSystem = std::make_unique<InputSystem>();
+    inputSystem = std::make_unique<InputSystem>(window);
 }
 
 bool Game::Update()
 {
-    if (glfwWindowShouldClose(window))
-    {
-        LOG("closing");
-        return false;
-    }
     inputSystem->Update(window);
     int liveEnemies = 0;
-    for(int i = 0; i < spaceShips.size(); i++)
+    int n = spaceShips.size();
+    bool stopGame = false;
+    for(int i = 0; i < n; i++)
     {
         if(spaceShips[i]->isAlive)
         {
             if(!spaceShips[i]->isPlayer)liveEnemies++;
         
-            spaceShips[i]->update(*inputSystem);
-        }
-        if(!spaceShips[playerId]->isAlive)
-        {
-            glfwSetWindowShouldClose(window, true);
+            spaceShips[i]->update(*inputSystem, this);
         }
     }
+    n = asteroids.size();
+    for (int i = 0; i < n; i++)
+    {
+        asteroids[i]->update(this);   
+    }
+    
+    physicsSystem->CheckCollisions(this);
 
     if(liveEnemies == 0)
     {
-        spaceShips.emplace_back(std::make_unique<Spaceship>(assetLoader->meshes[0], d3ObjectShaders, *glResLib));
+        spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
+    }
+
+    physicsSystem->Cleanup();
+
+    if(inputSystem->IsKeyUp(RELEASE_CURSOR))
+    {
+        if(cursorCaptured)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+        else
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        cursorCaptured = !cursorCaptured;
+    }
+
+    if (glfwWindowShouldClose(window))
+    {
+        KillSpaceship(spaceShips[playerId]->id);
+        return false;
     }
     glfwPollEvents();
     GL(glClear(GL_COLOR_BUFFER_BIT));
     GL(glClear(GL_DEPTH_BUFFER_BIT));
-    
     if(DEBUG){
         //LOG("camMat", cam.WorldToObserverSpaceMatrix());
         //LOG("projMat", ProjectionMatrix);
     }
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
-    //draw texts
-    int n = texts.size();
-    for (int i = 0; i < n; i++)
-    {
-        texts[i].Render();
-    }
+    
     //draw camera
     vector2i screenSize;
     glfwGetFramebufferSize(window, &screenSize.x(), &screenSize.y());
-    cameraUsed->Render(screenSize);
+    renderer->SetScreenSize(screenSize);
+    cameraUsed->Render(*renderer, textureManager);
     //draw spaceships
-    
+    vector3 l = {0.468521, 0.624695, -0.624695};
+    DebugDrawPoint((l * 1000), Identity(), {1,1,0});
+    //draw texts
+    n = texts.size();
+    for (int i = 0; i < n; i++)
+    {
+        renderer->Render(&texts[i]);
+    }
+    //DebugDrawCollider(physicsSystem->GetFirstColliderBelongingTo(spaceShips[1]->id), spaceShips[1]->translationMat, {1,0,1});
+    //DebugDrawLine({0,0,0}, spaceShips[playerId]->forward,  Identity(), {1,0,1});
+    //DebugDrawLine({0,0,0}, {1,0,0},  Identity(), {1,0,0});
+    //DebugDrawLine({0,0,0}, {0,1,0},  Identity(), {0,1,0});
+    //DebugDrawLine({0,0,0}, {0,0,1},  Identity(), {0,0,1});
+
     d3ObjectShaders->AssignDataToUniform(D3_OBSERVER_PLANE, cameraUsed->WorldToObserverSpaceMatrix().data);
     d3ObjectShaders->AssignDataToUniform(D3_VIEW_POSITION, &cameraUsed->position.data[0]);
     n = spaceShips.size();
@@ -166,11 +214,46 @@ bool Game::Update()
         if(DEBUG){
             //LOG((string)"spaceShip "+(char)('0' + i), spaceShips[i].translationMat);
         }
-        spaceShips[i]->Render();
-    }
-    
-    GL(glfwSwapBuffers(window));
+        if(!spaceShips[i]->isPlayer && spaceShips[i]->isAlive)
+        {
+            int trigs = spaceShips[i]->trigCount;
+            for (int j = 0; j < trigs; j++)
+            {
+                vector3 v1 = {
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+0],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+1],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+2]
+                };
+                vector3 v2 = {
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+0],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+1],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+2]
+                };
+                vector3 v3 = {
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+0],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+1],
+                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+2]
+                };
+                v1 = (v3 + v2 + v1) * 0.3333;
 
+                vector3 a = {
+                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+0],
+                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+1],
+                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+2]
+                };
+                DebugDrawLine(v1, a, spaceShips[i]->translationMat, {0,0,1});
+            }
+            
+            renderer->Render(spaceShips[i].get());
+        }
+    }
+    n = asteroids.size();
+    for(int i = 0; i < n; i++)
+    {     
+        renderer->Render(asteroids[i].get());
+    }
+
+    GL(glfwSwapBuffers(window));
     return true;
 }
 
@@ -180,7 +263,145 @@ Game::~Game()
     {
         if(spaceShips[i]->isAlive)
         {
-            spaceShips[i]->die();
+            KillSpaceship(spaceShips[i]->id);
         }
     }
+}
+
+void Game::ShootLaser(Ray fireRay)
+{
+    physicsSystem->ShootLaser(fireRay, this);
+}
+
+weak_ptr<Spaceship> Game::GetSpaceShip(unsigned int id)
+{
+    int n = spaceShips.size();
+    for (int i = 0; i < n; i++)
+    {
+        if(spaceShips[i]->id == id)
+        {
+            return spaceShips[i];
+        }
+    }
+    error("Did not find ship");
+}
+
+void Game::DebugDrawLine(vector3 origin, vector3 direction, matrix4 translation, vector3 color)
+{
+    std::vector<float> v;
+    v = {origin.x(), origin.y(), origin.z(),
+        origin.x()+direction.x()*2, origin.y()+direction.y()*2, origin.z()+direction.z()*2};
+    DebugDraw g(v, cameraUsed->projectionMatrix, color);
+    g.Render(translation, cameraUsed->WorldToObserverSpaceMatrix());
+}
+
+void Game::DebugDrawCollider(Collider col, matrix4 translation, vector3 color)
+{
+    std::vector<float> v;
+    std::vector<unsigned int> i;
+    
+    vector3 halfSize;
+    halfSize.data[0] = col.width  * 0.5f;
+    halfSize.data[1] = col.height * 0.5f;
+    halfSize.data[2] = col.length * 0.5f;
+    vector3 min = (vector3){0,0,0} - halfSize;
+    vector3 max = (vector3){0,0,0} + halfSize;
+
+    // Define 8 corners of the box
+    v = {
+        min.x(), min.y(), min.z(), // 0
+        max.x(), min.y(), min.z(), // 1
+        max.x(), max.y(), min.z(), // 2
+        min.x(), max.y(), min.z(), // 3
+        min.x(), min.y(), max.z(), // 4
+        max.x(), min.y(), max.z(), // 5
+        max.x(), max.y(), max.z(), // 6
+        min.x(), max.y(), max.z()  // 7
+    };
+   i = {
+        // Front face
+        0, 1, 2, 2, 3, 0,
+        // Back face
+        5, 4, 7, 7, 6, 5,
+        // Left face
+        4, 0, 3, 3, 7, 4,
+        // Right face
+        1, 5, 6, 6, 2, 1,
+        // Top face
+        3, 2, 6, 6, 7, 3,
+        // Bottom face
+        4, 5, 1, 1, 0, 4
+    };
+
+    DebugDraw g(v, i, cameraUsed->projectionMatrix, color);
+    g.Render(translation, cameraUsed->WorldToObserverSpaceMatrix());
+}
+
+void Game::DebugDrawPoint(vector3 pos, matrix4 translation, vector3 color)
+{
+    std::vector<float> v;
+    std::vector<unsigned int> i;
+    
+    //translation(0, 3) +=;
+    //translation(1, 3) +=;
+    //translation(2, 3) +=;
+
+    vector3 halfSize;
+    halfSize.data[0] = 0.3f * 100;
+    halfSize.data[1] = 0.3f * 100;
+    halfSize.data[2] = 0.3f * 100;
+    vector3 min = (vector3){0,0,0} - halfSize;
+    vector3 max = (vector3){0,0,0} + halfSize;
+    min = min + pos;
+    max = max + pos;
+    // Define 8 corners of the box
+    v = {
+        min.x(), min.y(), min.z(), // 0
+        max.x(), min.y(), min.z(), // 1
+        max.x(), max.y(), min.z(), // 2
+        min.x(), max.y(), min.z(), // 3
+        min.x(), min.y(), max.z(), // 4
+        max.x(), min.y(), max.z(), // 5
+        max.x(), max.y(), max.z(), // 6
+        min.x(), max.y(), max.z()  // 7
+    };
+   i = {
+        // Front face
+        0, 1, 2, 2, 3, 0,
+        // Back face
+        5, 4, 7, 7, 6, 5,
+        // Left face
+        4, 0, 3, 3, 7, 4,
+        // Right face
+        1, 5, 6, 6, 2, 1,
+        // Top face
+        3, 2, 6, 6, 7, 3,
+        // Bottom face
+        4, 5, 1, 1, 0, 4
+    };
+
+    DebugDraw g(v, i, cameraUsed->projectionMatrix, color);
+    g.Render(translation, cameraUsed->WorldToObserverSpaceMatrix());
+}
+
+void Game::KillSpaceship(unsigned int entityId)
+{
+    weak_ptr<Spaceship> shipToKill = GetSpaceShip(entityId);
+    
+    if(!shipToKill.lock()->isAlive)
+    {
+        return;
+    }
+    
+    if(shipToKill.lock()->isPlayer)
+    {
+        LOG("Player dead!");
+        glfwSetWindowShouldClose(window, true);
+    }
+    physicsSystem->MarkColliderForDeletion(entityId);
+    shipToKill.lock()->isAlive = false;
+    #if DEBUG_MEMORY
+        LOG("deleted memory ", normalIndexes);
+    #endif
+    delete[] shipToKill.lock()->normalIndexes;
 }
