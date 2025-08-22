@@ -7,7 +7,6 @@ HIGH:
 
 FEATURE:
 flight instruments
-asteroids
 implement ai
 implement ship textures 
 implement pseudo randomness

@@ -36,6 +36,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/WorldObject.cpp" "CMakeFiles/spaceships.dir/src/objects/WorldObject.cpp.obj" "gcc" "CMakeFiles/spaceships.dir/src/objects/WorldObject.cpp.obj.d"
   "C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/static/Logger.cpp" "CMakeFiles/spaceships.dir/src/static/Logger.cpp.obj" "gcc" "CMakeFiles/spaceships.dir/src/static/Logger.cpp.obj.d"
   "C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/Collider.cpp" "CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj" "gcc" "CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj.d"
+  "C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/PhysicsData.cpp" "CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj" "gcc" "CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj.d"
   "C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/Shader.cpp" "CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj" "gcc" "CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj.d"
   )
 

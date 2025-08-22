@@ -266,6 +266,7 @@ CMakeFiles/spaceships.dir/src/objects/Asteroid.cpp.obj: \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/Game.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/D2Object.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/Spaceship.h \
+ C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/PhysicsData.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/norends/Camera.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/managers/Renderer.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/TextObject.h \

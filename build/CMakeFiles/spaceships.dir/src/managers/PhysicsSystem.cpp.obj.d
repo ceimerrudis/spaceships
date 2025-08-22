@@ -264,6 +264,7 @@ CMakeFiles/spaceships.dir/src/managers/PhysicsSystem.cpp.obj: \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/Spaceship.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/ModelObject.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/managers/InputSystem.h \
+ C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/PhysicsData.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/norends/Camera.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/managers/Renderer.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/TextObject.h \

@@ -262,6 +262,7 @@ CMakeFiles/spaceships.dir/src/objects/Spaceship.cpp.obj: \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/managers/InputSystem.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/Collider.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/managers/PhysicsSystem.h \
+ C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/PhysicsData.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/helpers/GLerrorHandling.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/Game.h \
  C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/objects/D2Object.h \

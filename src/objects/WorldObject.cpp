@@ -49,19 +49,19 @@ void WorldObject::updateTranslationMat()
     0         0     0       1
     **/
     orthonormalize();
-    translationMat(0, 0) = right.data[0];
+    translationMat(0, 0) = forward.data[0];
     translationMat(0, 1) = up.data[0];
-    translationMat(0, 2) = forward.data[0];
+    translationMat(0, 2) = right.data[0];
     translationMat(0, 3) = position.data[0];
 
-    translationMat(1, 0) = right.data[1];
+    translationMat(1, 0) = forward.data[1];
     translationMat(1, 1) = up.data[1];
-    translationMat(1, 2) = forward.data[1];
+    translationMat(1, 2) = right.data[1];
     translationMat(1, 3) = position.data[1];
 
-    translationMat(2, 0) = right.data[2];
+    translationMat(2, 0) = forward.data[2];
     translationMat(2, 1) = up.data[2];
-    translationMat(2, 2) = forward.data[2];
+    translationMat(2, 2) = right.data[2];
     translationMat(2, 3) = position.data[2];
     
     translationMat(3, 0) = 0.0f;

@@ -974,6 +974,30 @@ src/structures/Collider.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/src/structures/Collider.cpp.s
 .PHONY : src/structures/Collider.cpp.s
 
+src/structures/PhysicsData.obj: src/structures/PhysicsData.cpp.obj
+.PHONY : src/structures/PhysicsData.obj
+
+# target to build an object file
+src/structures/PhysicsData.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj
+.PHONY : src/structures/PhysicsData.cpp.obj
+
+src/structures/PhysicsData.i: src/structures/PhysicsData.cpp.i
+.PHONY : src/structures/PhysicsData.i
+
+# target to preprocess a source file
+src/structures/PhysicsData.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.i
+.PHONY : src/structures/PhysicsData.cpp.i
+
+src/structures/PhysicsData.s: src/structures/PhysicsData.cpp.s
+.PHONY : src/structures/PhysicsData.s
+
+# target to generate assembly for a file
+src/structures/PhysicsData.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.s
+.PHONY : src/structures/PhysicsData.cpp.s
+
 src/structures/Shader.obj: src/structures/Shader.cpp.obj
 .PHONY : src/structures/Shader.obj
 
@@ -1107,6 +1131,9 @@ help:
 	@echo ... src/structures/Collider.obj
 	@echo ... src/structures/Collider.i
 	@echo ... src/structures/Collider.s
+	@echo ... src/structures/PhysicsData.obj
+	@echo ... src/structures/PhysicsData.i
+	@echo ... src/structures/PhysicsData.s
 	@echo ... src/structures/Shader.obj
 	@echo ... src/structures/Shader.i
 	@echo ... src/structures/Shader.s

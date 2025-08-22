@@ -144,6 +144,10 @@ InputSystem::InputSystem(GLFWwindow* window)
     temp.keyname = RELEASE_CURSOR;
     temp.keycode = GLFW_KEY_ESCAPE;
     inputs.push_back(temp);
+    temp.keyname = BREAK_KEY;
+    temp.keycode = GLFW_KEY_LEFT_CONTROL;
+    inputs.push_back(temp);
+    
 
     temp.keyname = FIRE_KEY;
     temp.keycode = KEY_MOUSE_ONE;

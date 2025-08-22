@@ -4,15 +4,11 @@
 void Renderer::Render(ModelObject* model)
 {
     GL(glUseProgram(*model->shaders->shaderKey));
-    lightDirtection = {1,1,0};
-    lightDirtection = lightDirtection.Normalized();
-    LOG(lightDirtection);
     matrix3 inverseRotMat;
-    inverseRotMat = model->translationMat.Inverse();
-
+    inverseRotMat = model->translationMat;
+    inverseRotMat = inverseRotMat.Inverse();
     vector3 ldir = VecMultipliedByMatrix(lightDirtection, inverseRotMat).Normalized();
-    LOG("transl ", model->translationMat);
-    LOG(ldir);
+    
     model->shaders->AssignDataToUniform(D3_LIGHT_DIRECTION, ldir.data);
     model->shaders->AssignDataToUniform(D3_WORLD_TRANSFORM, model->translationMat.data);
     GL(glBindVertexArray(*model->vertexArrayObjectKey));

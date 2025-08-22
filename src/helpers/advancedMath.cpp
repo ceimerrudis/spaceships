@@ -5,14 +5,14 @@ matrix4 matrix4::Inverse(){
     Eigen::Matrix4f result;
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
-            if(row < 3 && col == 2)
-            {
-                result(row, col) = -(*this)(row, col);
-            }
-            else
-            {
+            //if(row < 3 && col == 2)
+            //{
+            //    result(row, col) = -(*this)(row, col);
+            //}
+            //else
+            //{
                 result(row, col) = (*this)(row, col);
-            }
+            //}
         }
     }
     
@@ -21,6 +21,26 @@ matrix4 matrix4::Inverse(){
     matrix4 m;
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
+            m(row, col) = inv(row, col);
+        }
+    }
+    return m;
+}
+
+
+const matrix3 matrix3::Inverse(){
+    Eigen::Matrix3f result;
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 3; ++col) {
+            result(row, col) = (*this)(row, col);
+        }
+    }
+    
+    Eigen::Matrix3f inv = result.inverse();
+
+    matrix3 m;
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 3; ++col) {
             m(row, col) = inv(row, col);
         }
     }
@@ -120,7 +140,7 @@ std::string vector3::ToString()
     return res;
 }   
 
-vector3 vector3::Normalized()
+const vector3 vector3::Normalized()
 {
     float len = sqrt(x() * x() + y() * y() + z() * z());
 

@@ -44,6 +44,8 @@ struct matrix3
     matrix3& operator =(const matrix4& a);
 
     vector3 operator *(const vector3& a) const;
+    
+    const matrix3 Inverse();
 };
 
 struct vector4
@@ -94,7 +96,7 @@ struct vector3
 
     std::string ToString();
 
-    vector3 Normalized();
+    const vector3 Normalized();
 };
 
 struct vector2

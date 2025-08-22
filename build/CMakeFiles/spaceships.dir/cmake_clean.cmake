@@ -55,6 +55,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/spaceships.dir/src/static/Logger.cpp.obj.d"
   "CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj"
   "CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj.d"
+  "CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj"
+  "CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj.d"
   "CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj"
   "CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj.d"
   "libspaceships.dll.a"

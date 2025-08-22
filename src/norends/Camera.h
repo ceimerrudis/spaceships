@@ -10,10 +10,11 @@ struct Camera: public WorldObject {
     matrix4 projectionMatrix;
     Spaceship* spaceship;
     std::unique_ptr<TextObject> throttleText;
-    std::unique_ptr<TextObject> RotText;
     std::unique_ptr<TextObject>  PosText;
     std::unique_ptr<CubemapObject>  skybox;
     std::unique_ptr<D2Object>  cockpit;
+    std::unique_ptr<D2Object>  instrument;
+    std::unique_ptr<D2Object>  indicator;
     matrix4 WorldToObserverSpaceMatrix();
 
     void Render(Renderer& renderer, std::weak_ptr<TextureManager> textureManager);

@@ -476,11 +476,26 @@ CMakeFiles/spaceships.dir/src/structures/Collider.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/spaceships.dir/src/structures/Collider.cpp.s"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\src\structures\Collider.cpp -o CMakeFiles\spaceships.dir\src\structures\Collider.cpp.s
 
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj: CMakeFiles/spaceships.dir/flags.make
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj: CMakeFiles/spaceships.dir/includes_CXX.rsp
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj: C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/PhysicsData.cpp
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj: CMakeFiles/spaceships.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj -MF CMakeFiles\spaceships.dir\src\structures\PhysicsData.cpp.obj.d -o CMakeFiles\spaceships.dir\src\structures\PhysicsData.cpp.obj -c C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\src\structures\PhysicsData.cpp
+
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.i"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\src\structures\PhysicsData.cpp > CMakeFiles\spaceships.dir\src\structures\PhysicsData.cpp.i
+
+CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.s"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\src\structures\PhysicsData.cpp -o CMakeFiles\spaceships.dir\src\structures\PhysicsData.cpp.s
+
 CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj: CMakeFiles/spaceships.dir/flags.make
 CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj: CMakeFiles/spaceships.dir/includes_CXX.rsp
 CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj: C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/src/structures/Shader.cpp
 CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj: CMakeFiles/spaceships.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj -MF CMakeFiles\spaceships.dir\src\structures\Shader.cpp.obj.d -o CMakeFiles\spaceships.dir\src\structures\Shader.cpp.obj -c C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\src\structures\Shader.cpp
 
 CMakeFiles/spaceships.dir/src/structures/Shader.cpp.i: cmake_force
@@ -495,7 +510,7 @@ CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj: CMakeFiles/s
 CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj: CMakeFiles/spaceships.dir/includes_C.rsp
 CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj: C:/Users/ceime_s6bszb5/Documents/cxx/spaceships/dependencies/Remotery/lib/Remotery.c
 CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj: CMakeFiles/spaceships.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj"
 	C:\MinGW\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj -MF CMakeFiles\spaceships.dir\dependencies\Remotery\lib\Remotery.c.obj.d -o CMakeFiles\spaceships.dir\dependencies\Remotery\lib\Remotery.c.obj -c C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\dependencies\Remotery\lib\Remotery.c
 
 CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.i: cmake_force
@@ -535,6 +550,7 @@ spaceships_OBJECTS = \
 "CMakeFiles/spaceships.dir/src/objects/WorldObject.cpp.obj" \
 "CMakeFiles/spaceships.dir/src/static/Logger.cpp.obj" \
 "CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj" \
+"CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj" \
 "CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj" \
 "CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj"
 
@@ -568,6 +584,7 @@ spaceships.exe: CMakeFiles/spaceships.dir/src/objects/TextObject.cpp.obj
 spaceships.exe: CMakeFiles/spaceships.dir/src/objects/WorldObject.cpp.obj
 spaceships.exe: CMakeFiles/spaceships.dir/src/static/Logger.cpp.obj
 spaceships.exe: CMakeFiles/spaceships.dir/src/structures/Collider.cpp.obj
+spaceships.exe: CMakeFiles/spaceships.dir/src/structures/PhysicsData.cpp.obj
 spaceships.exe: CMakeFiles/spaceships.dir/src/structures/Shader.cpp.obj
 spaceships.exe: CMakeFiles/spaceships.dir/dependencies/Remotery/lib/Remotery.c.obj
 spaceships.exe: CMakeFiles/spaceships.dir/build.make
@@ -577,7 +594,7 @@ spaceships.exe: dependencies/freetype-2.13.3/libfreetype.a
 spaceships.exe: CMakeFiles/spaceships.dir/linkLibs.rsp
 spaceships.exe: CMakeFiles/spaceships.dir/objects1.rsp
 spaceships.exe: CMakeFiles/spaceships.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Linking CXX executable spaceships.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Linking CXX executable spaceships.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\spaceships.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

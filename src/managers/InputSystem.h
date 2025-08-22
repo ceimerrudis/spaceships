@@ -26,6 +26,7 @@
 #define MOVE_DOWN_KEY 12
 #define MOVE_LEFT_KEY 13
 #define MOVE_RIGHT_KEY 14
+#define BREAK_KEY 15
 
 struct Input{
     unsigned int keyname;

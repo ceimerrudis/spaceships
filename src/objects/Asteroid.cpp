@@ -14,14 +14,14 @@ Asteroid::Asteroid(unsigned int id, std::shared_ptr<Shader> shaders, OpenGLResou
 {
     position = {RandomF(100, 200), RandomF(100, 200), RandomF(100, 200)};
     updateTranslationMat();
-    //position TODO gen randomly
-    //physSys.AddCollider(id, position, {1.0f, 1.0f, 1.0f});
+    //TODO//physSys.AddCollider(id, position, {5.0f, 5.0f, 5.0f});
 }
 
 void Asteroid::update(Game* game)
 {
     //Does whatewer a rock does
     rotate(up, 0.01);
+    rotate(forward, 0.005);
     //move(forward * (float(this->throttle) / 1000));
     //move(right * (float(this->aiMoveRight) / 10));
     //move(up * (float(this->aiMoveUp) / 10));

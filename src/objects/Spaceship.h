@@ -8,6 +8,7 @@
 #include "InputSystem.h"
 #include "Collider.h"
 #include "PhysicsSystem.h"
+#include "PhysicsData.h"
 #include <memory>
 
 class Game;
@@ -17,6 +18,7 @@ struct Spaceship: public ModelObject{
     const int COMMAND_COOLDOWN = 500;
     const int FIRE_COOLDOWN = 100;
     const unsigned int id;
+    PhysicsData physicsData;
     bool isAlive;
     bool isPlayer;
     int health;
@@ -25,6 +27,7 @@ struct Spaceship: public ModelObject{
     int fireCooldown;
     int throttle;
 
+    int aiBreaks;
     float aiYaw;
     float aiRoll; 
     float aiPitch;

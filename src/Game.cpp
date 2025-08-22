@@ -15,6 +15,8 @@ Game::Game()
     glyphCache = std::make_unique<GlyphCache>(*assetLoader);
     //Move variables out
     int cockpitImage = assetLoader->LoadImage("cockpit.png");
+    int instrumentImage = assetLoader->LoadImage("instrument.png");
+    int indicatorImage = assetLoader->LoadImage("indicator.png");
     int skyboxImageRight    = assetLoader->LoadImage("skybox2_c00.bmp");//right +x
     int skyboxImageLeft     = assetLoader->LoadImage("skybox2_c01.bmp");//left -x
     int skyboxImageTop      = assetLoader->LoadImage("skybox2_c02.bmp");//top +y
@@ -103,25 +105,25 @@ Game::Game()
          vector2{-0.30, -0.8}, //position
          vector3{1, 0, 0},//direction
            *glyphCache);
-    cameraUsed->RotText = std::make_unique<TextObject>(*glResLib, textShaders, 
-         28, //size
-         vector2{-0.30, -0.6}, //position
-         vector3{1, 0, 0},//direction
-           *glyphCache);
     cameraUsed->cockpit = std::make_unique<D2Object>(imageShaders, vector2{-1, -1}, vector2{1, 1}, assetLoader->GetResource(cockpitImage), textureManager, *glResLib);
-
-    for(int i = 0; i < 1; i++)
+    cameraUsed->instrument = std::make_unique<D2Object>
+    (imageShaders, vector2{-0.1, -0.6}, vector2{0.1, -0.4}, 
+    assetLoader->GetResource(instrumentImage), textureManager, *glResLib);
+    cameraUsed->indicator = std::make_unique<D2Object>
+    (imageShaders, vector2{-0.02, -0.52}, vector2{0.02, -0.48}, 
+    assetLoader->GetResource(indicatorImage), textureManager, *glResLib);
+    
+    for(int i = 0; i < 20; i++)
     {
         asteroids.emplace_back(std::make_shared<Asteroid>(currentNextId++, d3ObjectShaders, *glResLib, *physicsSystem));
     }
-
     //OpenGl uzstādījumi
     GL(glEnable(GL_BLEND));
     GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     GL(glEnable(GL_DEPTH_TEST));//Ieslēdzam automātiski izveidoto dziļuma tekstūru
     GL(glDepthFunc(GL_LESS));//Dod priekšroku punktiem ar mazāku z vērtību
     GL(glEnable(GL_CULL_FACE));
-    GL(glFrontFace(GL_CW));
+    GL(glFrontFace(GL_CCW));
     GL(glPolygonMode(GL_FRONT, GL_FILL));//Aizpildām figūras GL_FILL GL_LINE
     GL(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -215,35 +217,7 @@ bool Game::Update()
             //LOG((string)"spaceShip "+(char)('0' + i), spaceShips[i].translationMat);
         }
         if(!spaceShips[i]->isPlayer && spaceShips[i]->isAlive)
-        {
-            int trigs = spaceShips[i]->trigCount;
-            for (int j = 0; j < trigs; j++)
-            {
-                vector3 v1 = {
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+0],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+1],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+0]*3+2]
-                };
-                vector3 v2 = {
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+0],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+1],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+1]*3+2]
-                };
-                vector3 v3 = {
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+0],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+1],
-                    spaceShips[i]->meshP->vertices[spaceShips[i]->meshP->vertexIndices[j*3+2]*3+2]
-                };
-                v1 = (v3 + v2 + v1) * 0.3333;
-
-                vector3 a = {
-                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+0],
-                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+1],
-                    spaceShips[i]->meshP->normals[spaceShips[i]->normalIndexes[j]*4+2]
-                };
-                DebugDrawLine(v1, a, spaceShips[i]->translationMat, {0,0,1});
-            }
-            
+        {            
             renderer->Render(spaceShips[i].get());
         }
     }
@@ -320,17 +294,17 @@ void Game::DebugDrawCollider(Collider col, matrix4 translation, vector3 color)
     };
    i = {
         // Front face
-        0, 1, 2, 2, 3, 0,
+        0, 2, 1, 2, 0, 3,
         // Back face
-        5, 4, 7, 7, 6, 5,
+        5, 7, 4, 7, 5, 6,
         // Left face
-        4, 0, 3, 3, 7, 4,
+        4, 3, 0, 3, 4, 7,
         // Right face
-        1, 5, 6, 6, 2, 1,
+        1, 6, 5, 6, 1, 2,
         // Top face
-        3, 2, 6, 6, 7, 3,
+        3, 6, 2, 6, 3, 7,
         // Bottom face
-        4, 5, 1, 1, 0, 4
+        4, 1, 5, 1, 4, 0
     };
 
     DebugDraw g(v, i, cameraUsed->projectionMatrix, color);
@@ -367,17 +341,17 @@ void Game::DebugDrawPoint(vector3 pos, matrix4 translation, vector3 color)
     };
    i = {
         // Front face
-        0, 1, 2, 2, 3, 0,
+        0, 2, 1, 2, 0, 3,
         // Back face
-        5, 4, 7, 7, 6, 5,
+        5, 7, 4, 7, 5, 6,
         // Left face
-        4, 0, 3, 3, 7, 4,
+        4, 3, 0, 3, 4, 7,
         // Right face
-        1, 5, 6, 6, 2, 1,
+        1, 6, 5, 6, 1, 2,
         // Top face
-        3, 2, 6, 6, 7, 3,
+        3, 6, 2, 6, 3, 7,
         // Bottom face
-        4, 5, 1, 1, 0, 4
+        4, 1, 5, 1, 4, 0
     };
 
     DebugDraw g(v, i, cameraUsed->projectionMatrix, color);

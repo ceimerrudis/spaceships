@@ -24,7 +24,7 @@ TextObject::TextObject(OpenGLResourceLibrary& glResLib, std::shared_ptr<Shader> 
     this->pos = pos;
     this->textDir = dir;
 
-    indicies = {0, 1, 3, 3, 1, 2};
+    indicies = {0, 3, 1, 3, 2, 1};
     
     GL(glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STREAM_DRAW));
     GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies.data(), GL_STATIC_DRAW));

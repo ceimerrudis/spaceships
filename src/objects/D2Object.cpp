@@ -12,7 +12,7 @@
 D2Object::D2Object(std::shared_ptr<Shader> shaders, vector2 bottomLeft, vector2 topRight, TextureResource& textureResource, std::shared_ptr<TextureManager> textureManager, OpenGLResourceLibrary& glResLib)
     :   Renderable(shaders, glResLib)
 {
-    unsigned int indicies[6] = {0, 1, 3, 3, 1, 2};
+    unsigned int indicies[6] = {0, 3, 1, 3, 2, 1};
     vertexes = //Pirmas 2 kolonas ir vertex position  uotras 2 texturu koordinates
     {
          bottomLeft.x(),   bottomLeft.y(),    0, 0,

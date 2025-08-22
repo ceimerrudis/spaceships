@@ -209,16 +209,16 @@ CMakeFiles/copy_resources.dir/clean:
 
 # All Build rule for target.
 CMakeFiles/spaceships.dir/all: CMakeFiles/glad.dir/all
-CMakeFiles/spaceships.dir/all: dependencies/freetype-2.13.3/CMakeFiles/freetype.dir/all
 CMakeFiles/spaceships.dir/all: dependencies/glfw-3.4/src/CMakeFiles/glfw.dir/all
+CMakeFiles/spaceships.dir/all: dependencies/freetype-2.13.3/CMakeFiles/freetype.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98 "Built target spaceships"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99 "Built target spaceships"
 .PHONY : CMakeFiles/spaceships.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/spaceships.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles 98
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles 99
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/spaceships.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles 0
 .PHONY : CMakeFiles/spaceships.dir/rule
@@ -230,7 +230,7 @@ spaceships: CMakeFiles/spaceships.dir/rule
 # codegen rule for target.
 CMakeFiles/spaceships.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\spaceships.dir\build.make CMakeFiles/spaceships.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98 "Finished codegen for target spaceships"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99 "Finished codegen for target spaceships"
 .PHONY : CMakeFiles/spaceships.dir/codegen
 
 # clean rule for target.
@@ -373,7 +373,7 @@ dependencies/glfw-3.4/src/CMakeFiles/glfw.dir/clean:
 dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/all:
 	$(MAKE) $(MAKESILENT) -f dependencies\glfw-3.4\src\CMakeFiles\update_mappings.dir\build.make dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/depend
 	$(MAKE) $(MAKESILENT) -f dependencies\glfw-3.4\src\CMakeFiles\update_mappings.dir\build.make dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=99 "Built target update_mappings"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=100 "Built target update_mappings"
 .PHONY : dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/all
 
 # Build rule for subdir invocation for target.
@@ -390,7 +390,7 @@ update_mappings: dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/rule
 # codegen rule for target.
 dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f dependencies\glfw-3.4\src\CMakeFiles\update_mappings.dir\build.make dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=99 "Finished codegen for target update_mappings"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\ceime_s6bszb5\Documents\cxx\spaceships\build\CMakeFiles --progress-num=100 "Finished codegen for target update_mappings"
 .PHONY : dependencies/glfw-3.4/src/CMakeFiles/update_mappings.dir/codegen
 
 # clean rule for target.
