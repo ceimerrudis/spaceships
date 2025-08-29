@@ -13,8 +13,8 @@ Matrix<float, 4>  CreateProjectionMatrix()
     float zfar = 1000.0f, znear =  0.01f;
     float zCoef = zfar/(zfar-znear);
     ProjectionMatrix(2, 2) = -zCoef;
-    ProjectionMatrix(3, 2) = -zCoef*znear;
-    ProjectionMatrix(2, 3) = -1;
+    ProjectionMatrix(2, 3) = -zCoef*znear;
+    ProjectionMatrix(3, 2) = -1;
 
     return ProjectionMatrix;
 }

@@ -103,7 +103,7 @@ Vector<float, 3> aRotate(const Vector<float, 3>& p, const Vector<float, 3>& v, d
 }
 
 void WorldObject::Orthonormalize() {
-    return;right = right.Normalized();
+    right = right.Normalized();
 
     Vector<float, 3> proj_u1_v2 = right * (up % right);
     Vector<float, 3> ortho_v2 = up - proj_u1_v2;

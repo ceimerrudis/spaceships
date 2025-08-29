@@ -45,7 +45,8 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
 {
     if(isPlayer)
     {
-        //LOG(transformMatrix);
+        LOG("Transf");
+        LOG(transformMatrix);
         aiThrottle = 0;
         aiFire = 0;
         aiYaw = 0;
@@ -123,7 +124,7 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     }
 
     Move(physicsData.velocity);
-    Rotate(physicsData.angularVelocity.Normalized(), physicsData.angularVelocity.Magnitude());    
+    Rotate(physicsData.angularVelocity.Normalized(), physicsData.angularVelocity.Magnitude()/10);    
 
     if(fireCooldown == 0)
     {

@@ -26,7 +26,8 @@ void Camera::Render(Renderer& renderer, std::weak_ptr<TextureManager> textureMan
     PosText->SetText(std::string("POS: ") + spaceship->position.ToString(), textureManager);
     renderer.Render(PosText.get());
     skybox->shaders->AssignDataToUniform(SKYBOX_VIEW_MATRIX, WorldToObserverSpaceMatrix().data);
-    LOG(transformMatrix * transformMatrix.Inverse());
+    LOG("cam");
+    LOG(projectionMatrix);
     renderer.Render(skybox.get());
     renderer.Render(indicator.get());
     renderer.Render(instrument.get());
