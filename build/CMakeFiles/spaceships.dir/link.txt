@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\spaceships.dir/objects.a
-C:\MinGW\bin\ar.exe qc CMakeFiles\spaceships.dir/objects.a @CMakeFiles\spaceships.dir\objects1.rsp
-C:\MinGW\bin\c++.exe -Wl,--whole-archive CMakeFiles\spaceships.dir/objects.a -Wl,--no-whole-archive -o spaceships.exe -Wl,--out-implib,libspaceships.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\spaceships.dir\linkLibs.rsp
