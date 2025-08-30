@@ -45,8 +45,6 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
 {
     if(isPlayer)
     {
-        LOG("Transf");
-        LOG(transformMatrix);
         aiThrottle = 0;
         aiFire = 0;
         aiYaw = 0;
@@ -72,8 +70,8 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
         if(inputSystem.IsKeyHeld(MOVE_DOWN_KEY)){ aiMoveUp -= 1;}
 
         inputSystem.GetMouseDelta(&aiYaw, &aiPitch);
-        aiYaw  = clamp(aiYaw, -10, 10);
-        aiPitch = clamp(aiPitch, -10, 10);
+        aiYaw  = clamp(aiYaw, -20, 20);
+        aiPitch = clamp(aiPitch, -20, 20);
     }
     else{
         //ai
@@ -102,13 +100,13 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
         throttle = -MAX_THROTTLE;
     }
 
-    Vector<float, 3> thrustDir = (forward * 10) + right + up;
+    Vector<float, 3> thrustDir = (forward * 3) + right*aiMoveRight + up*aiMoveUp;
     
     physicsData.AddVelocity(thrustDir.Normalized(), float(throttle) / 80000);
     
-    physicsData.AddAngularVelocity(up, aiYaw / -80);
-    physicsData.AddAngularVelocity(forward, aiRoll / 140);
-    physicsData.AddAngularVelocity(right, aiPitch / 80);
+    physicsData.AddAngularVelocity(up, aiYaw / -40);
+    physicsData.AddAngularVelocity(forward, aiRoll / 70);
+    physicsData.AddAngularVelocity(right, aiPitch / 40);
     //Rotate(up, aiYaw / -50);
     //Rotate(forward, aiRoll / 50);
     //Rotate(right, aiPitch / 50);

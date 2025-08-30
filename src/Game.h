@@ -62,6 +62,8 @@ private:
     std::vector<TextObject> texts;
     int playerId;
     bool cursorCaptured;
+    int windowWidth;
+    int windowHeight;
 
     GLFWwindow* window;
 public:
@@ -82,4 +84,5 @@ public:
     void DebugDrawPoint(Vector<float, 3> pos, Matrix<float, 4> translation, Vector<float, 3> color = Vector<float, 3>{1, 0, 0});
 
     void KillSpaceship(unsigned int entityId);
+
 };

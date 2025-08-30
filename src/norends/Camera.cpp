@@ -7,7 +7,6 @@
 Camera::Camera(Spaceship* spaceship) : WorldObject()
 {
     this->spaceship = spaceship;
-    projectionMatrix = CreateProjectionMatrix();
 }
 
 Camera::~Camera() 
@@ -26,12 +25,28 @@ void Camera::Render(Renderer& renderer, std::weak_ptr<TextureManager> textureMan
     PosText->SetText(std::string("POS: ") + spaceship->position.ToString(), textureManager);
     renderer.Render(PosText.get());
     skybox->shaders->AssignDataToUniform(SKYBOX_VIEW_MATRIX, WorldToObserverSpaceMatrix().data);
-    LOG("cam");
-    LOG(projectionMatrix);
     renderer.Render(skybox.get());
+    
+    Vector<float, 3> indicatorPos = (spaceship->forward*-1).Normalized();
+    if(indicatorPos.x() <= 0)
+    {
+        //behind
+    }
+
+    //xy = z y
+    //float a = -0.1 + (indicatorPos.z() + 1.0f) * 0.5f * (0.1 + 0.1);
+    //float b = -0.4 + (indicatorPos.y() + 1.0f) * 0.5f * (-0.4 + 0.6);
+    //Vector<float, 2> BL = Vector<float, 2>{a - 0.01, b - 0.01};
+    //Vector<float, 2> TR = Vector<float, 2>{a + 0.01, b + 0.01};
+    //{-0.1, -0.6}
+    //{0.1, -0.4}, 
+    //{-0.02, -0.52}, Vector<float, 2>{0.02, -0.48}
+
     renderer.Render(indicator.get());
+
+
     renderer.Render(instrument.get());
-    renderer.Render(cockpit.get());
+    //renderer.Render(cockpit.get());
 }
 
 Matrix<float, 4> Camera::WorldToObserverSpaceMatrix()

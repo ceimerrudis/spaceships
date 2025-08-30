@@ -17,6 +17,7 @@ Game::Game()
     int cockpitImage        = assetLoader->LoadImage("cockpit.png");
     int instrumentImage     = assetLoader->LoadImage("instrument.png");
     int indicatorImage      = assetLoader->LoadImage("indicator.png");
+    int indicator2Image      = assetLoader->LoadImage("indicator2.png");
     int skyboxImageRight    = assetLoader->LoadImage("skybox2_c00.bmp");//right +x
     int skyboxImageLeft     = assetLoader->LoadImage("skybox2_c01.bmp");//left -x
     int skyboxImageTop      = assetLoader->LoadImage("skybox2_c02.bmp");//top +y
@@ -34,8 +35,18 @@ Game::Game()
     InitGlad();
     cursorCaptured = true;
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
-    glResLib = std::make_unique<OpenGLResourceLibrary>();;
+    glfwSetWindowUserPointer(window, this);
+    glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
+    {
+        Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+        game->cameraUsed->projectionMatrix = CreateProjectionMatrix(width, height, 400);
+        game->d3ObjectShaders->AssignDataToUniform(D3_PROJECTION_MATRIX,   (game->cameraUsed->projectionMatrix).data);
+        game->skyboxShaders->AssignDataToUniform(SKYBOX_PROJECTION_MATRIX, (game->cameraUsed->projectionMatrix).data);
+        game->windowWidth = width;
+        game->windowHeight = height;
+    });
+
+    glResLib = std::make_unique<OpenGLResourceLibrary>();
     
     //text shaders
     textShaders = LoadShader("text_vertex.glsl", "text_fragment.glsl", *glResLib);
@@ -71,9 +82,11 @@ Game::Game()
     spaceShips[playerId]->position.data[0] = -10;
     
     cameraUsed = std::make_unique<Camera>(spaceShips[playerId].get());
+    glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+    cameraUsed->projectionMatrix = CreateProjectionMatrix(windowWidth, windowHeight, 400);
     d3ObjectShaders->AssignDataToUniform(D3_PROJECTION_MATRIX,   (cameraUsed->projectionMatrix).data);
     skyboxShaders->AssignDataToUniform(SKYBOX_PROJECTION_MATRIX, (cameraUsed->projectionMatrix).data);
-
+    
     spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
     spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
     spaceShips[2]->position = Vector<float, 3>{10, 10, 4};
@@ -113,7 +126,7 @@ Game::Game()
     (imageShaders, Vector<float, 2>{-0.02, -0.52}, Vector<float, 2>{0.02, -0.48}, 
     assetLoader->GetResource(indicatorImage), textureManager, *glResLib);
     
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 2; i++)
     {
         asteroids.emplace_back(std::make_shared<Asteroid>(currentNextId++, d3ObjectShaders, *glResLib, *physicsSystem));
     }
@@ -185,17 +198,15 @@ bool Game::Update()
         //LOG("camMat", cam.WorldToObserverSpaceMatrix());
         //LOG("projMat", ProjectionMatrix);
     }
-    int winWidth, winHeight;
-    glfwGetWindowSize(window, &winWidth, &winHeight);
     
     //draw camera
-    Vector<int, 2> screenSize;
-    glfwGetFramebufferSize(window, &screenSize.x(), &screenSize.y());
-    renderer->SetScreenSize(screenSize);
+    renderer->SetScreenSize(Vector<int, 2> {windowWidth, windowHeight});
     cameraUsed->Render(*renderer, textureManager);
+
     //draw spaceships
     Vector<float, 3> l = Vector<float, 3>{0.468521, 0.624695, -0.624695};
     DebugDrawPoint((l * 1000), Matrix<float, 4>::Identity(), Vector<float, 3>{1,1,0});
+
     //draw texts
     n = texts.size();
     for (int i = 0; i < n; i++)

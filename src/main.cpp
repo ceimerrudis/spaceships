@@ -4,6 +4,7 @@ TODO
 CRITICAL:
 
 HIGH:
+keep track of window size and dont check it each frame
 
 FEATURE:
 flight instruments
