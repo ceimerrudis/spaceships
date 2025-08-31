@@ -23,8 +23,8 @@ void PhysicsSystem::CheckCollisions(Game* game)
     for(int i = 0; i < n; i++)
     {
         weak_ptr<Spaceship> ship = game->GetSpaceShip(colliders[i].entityId);
-        colliders[i].pos = ship.lock()->position;
-        colliders[i].rotation = ship.lock()->transformMatrix.ReduceDimensions();
+        colliders[i].pos = ship.lock()->transform.position;
+        colliders[i].rotation = ship.lock()->transform.transformMatrix.ReduceDimensions();
     }
 
     for(int i = 0; i < n; i++)

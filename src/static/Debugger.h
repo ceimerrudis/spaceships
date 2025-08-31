@@ -4,7 +4,6 @@
 #include "TextureResource.h"
 #include "TextureManager.h"
 #include "GlyphCache.h"
-#include "D2Object.h"
 #include "DebugDraw.h"
 #include <vector>
 #include <memory>

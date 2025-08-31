@@ -1,24 +1,25 @@
 #include "Renderer.h"
 #include "GLerrorHandling.h"
+//TODO
 
-void Renderer::Render(ModelObject* model)
+void Renderer::Render(Transform & transform, Renderable& renderrable, Shading& shading)
 {
-    GL(glUseProgram(*model->shaders->shaderKey));
+    GL(glUseProgram(*(renderrable.shaders->shaderKey)));
     Matrix<float, 3> inverseRotMat;
-    inverseRotMat = model->transformMatrix.ReduceDimensions();
+    inverseRotMat = transform.transformMatrix.ReduceDimensions();
     inverseRotMat = inverseRotMat.Inverse();
     Vector<float, 3> ldir = (inverseRotMat * lightDirtection).Normalized();
     
-    model->shaders->AssignDataToUniform(D3_LIGHT_DIRECTION, ldir.data);
-    model->shaders->AssignDataToUniform(D3_WORLD_TRANSFORM, model->transformMatrix.data);
-    GL(glBindVertexArray(*model->vertexArrayObjectKey));
+    renderrable.shaders->AssignDataToUniform(D3_LIGHT_DIRECTION, ldir.data);
+    renderrable.shaders->AssignDataToUniform(D3_WORLD_TRANSFORM, transform.transformMatrix.data);
+    GL(glBindVertexArray(*renderrable.vertexArrayObjectKey));
     
-    GL(glBindBuffer(GL_SHADER_STORAGE_BUFFER, *model->normalsBufferKey));
-    GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, *model->normalsBufferKey));
-    GL(glBindBuffer(GL_SHADER_STORAGE_BUFFER, *model->normalIndexesBufferKey));
-    GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, *model->normalIndexesBufferKey));
+    GL(glBindBuffer(GL_SHADER_STORAGE_BUFFER, *shading.normalsBufferKey));
+    GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, *shading.normalsBufferKey));
+    GL(glBindBuffer(GL_SHADER_STORAGE_BUFFER, *shading.normalIndexesBufferKey));
+    GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, *shading.normalIndexesBufferKey));
     
-    GL(glDrawElements(GL_TRIANGLES, model->trigCount*3, GL_UNSIGNED_INT, NULL));
+    GL(glDrawElements(GL_TRIANGLES, renderrable.trigCount*3, GL_UNSIGNED_INT, NULL));
 
     GL(glBindVertexArray(0));
     GL(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
@@ -26,14 +27,14 @@ void Renderer::Render(ModelObject* model)
     GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0));
 }
 
-void Renderer::Render(CubemapObject* cubemap)
+void Renderer::Render(Transform & transform, Renderable& renderrable, ModelTexture& modelTexture)
 {
-    GL(glUseProgram(*cubemap->shaders->shaderKey));
+    GL(glUseProgram(*renderrable.shaders->shaderKey));
     GL(glDepthMask(GL_FALSE));
-    GLuint tex = textureManager->LoadTexture(cubemap->textureKey);
-    cubemap->shaders->AssignDataToUniform(SKYBOX_TEXTURE_SLOT, &tex);
-    GL(glBindVertexArray(*cubemap->vertexArrayObjectKey));
-    GL(glDrawElements(GL_TRIANGLES, cubemap->trigCount*3, GL_UNSIGNED_INT, NULL));
+    GLuint tex = textureManager->LoadTexture(modelTexture.textureKey);
+    renderrable.shaders->AssignDataToUniform(SKYBOX_TEXTURE_SLOT, &tex);
+    GL(glBindVertexArray(*renderrable.vertexArrayObjectKey));
+    GL(glDrawElements(GL_TRIANGLES, renderrable.trigCount * 3, GL_UNSIGNED_INT, NULL));
 
     GL(glDepthMask(GL_TRUE));
     GL(glBindVertexArray(0));
@@ -47,35 +48,36 @@ Vector<float, 2> Prime(float x, float y, float angleRadians, Vector<float, 2> po
     };
 }
 
-void Renderer::Render(TextObject* text)
+
+void Renderer::Render(UITransform & transform, Renderable& renderrable, TextData& textData, ImageData& imageData)
 {
-    GL(glUseProgram(*text->shaders->shaderKey));
-    GL(glBindVertexArray(*text->vertexArrayObjectKey));
-    GL(glBindBuffer(GL_ARRAY_BUFFER, *text->vertexBufferKey));//must bind to change data
-    int n = text->letterTextureKeys.size();
-    float angleRadians = std::atan2(text->textDir.y(), text->textDir.x());
+    GL(glUseProgram(*renderrable.shaders->shaderKey));
+    GL(glBindVertexArray(*renderrable.vertexArrayObjectKey));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, *renderrable.vertexBufferKey));//must bind to change data
+    int n = textData.letterTextureKeys.size();
+    float angleRadians = std::atan2(textData.textDir.y(), textData.textDir.x());
     for (size_t i = 0; i < n; i++)
     {
-        float fofset = (2.0f * text->letterTextureKeys[i].offset) / screenSize.x();
-        float sizex = (2.0f * text->letterTextureKeys[i].size.x()) / screenSize.x();
-        float sizey = (2.0f * text->letterTextureKeys[i].size.y()) / screenSize.y();
+        float fofset = (2.0f * textData.letterTextureKeys[i].offset) / screenSize.x();
+        float sizex = (2.0f * textData.letterTextureKeys[i].size.x()) / screenSize.x();
+        float sizey = (2.0f * textData.letterTextureKeys[i].size.y()) / screenSize.y();
         
-        Vector<float, 2> first = Prime(fofset+text->pos.x(),       text->pos.y(),        angleRadians, text->pos);
-        Vector<float, 2> secon = Prime(fofset+text->pos.x(),       sizey+text->pos.y(),  angleRadians, text->pos);
-        Vector<float, 2> third = Prime(fofset+sizex+text->pos.x(), sizey+text->pos.y(),  angleRadians, text->pos);
-        Vector<float, 2> forth = Prime(fofset+sizex+text->pos.x(), text->pos.y(),        angleRadians, text->pos);
+        Vector<float, 2> first = Prime(fofset+transform.position.x(),       transform.position.y(),        angleRadians, transform.position);
+        Vector<float, 2> secon = Prime(fofset+transform.position.x(),       sizey+transform.position.y(),  angleRadians, transform.position);
+        Vector<float, 2> third = Prime(fofset+sizex+transform.position.x(), sizey+transform.position.y(),  angleRadians, transform.position);
+        Vector<float, 2> forth = Prime(fofset+sizex+transform.position.x(), transform.position.y(),        angleRadians, transform.position);
 
-        text->vertexes = {
+        imageData.vertexes = {
             first.x(), first.y(), 0, 0,
             secon.x(), secon.y(), 0, 1,
             third.x(), third.y(), 1, 1,
             forth.x(), forth.y(), 1, 0
         };
 
-        GL(glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 4 * sizeof(float), text->vertexes.data()));
+        GL(glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 4 * sizeof(float), imageData.vertexes.data()));
         
-        int slot = textureManager->LoadTexture((text->letterTextureKeys[i].textureKey));
-        text->shaders->AssignDataToUniform(TEXT_TEXTURE_SLOT, &slot);
+        int slot = textureManager->LoadTexture((textData.letterTextureKeys[i].textureKey));
+        renderrable.shaders->AssignDataToUniform(TEXT_TEXTURE_SLOT, &slot);
         
         GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
     }
@@ -84,12 +86,12 @@ void Renderer::Render(TextObject* text)
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void Renderer::Render(D2Object* d2Obj)
+void Renderer::Render(UITransform & transform, Renderable& renderrable, ImageData& imageData)
 {
-    GL(glUseProgram(*d2Obj->shaders->shaderKey));
-    int slot = textureManager->LoadTexture(d2Obj->textureKey);
-    d2Obj->shaders->AssignDataToUniform(IMAGE_TEXTURE_SLOT, &slot);
-    GL(glBindVertexArray(*d2Obj->vertexArrayObjectKey));
+    GL(glUseProgram(*renderrable.shaders->shaderKey));
+    int slot = textureManager->LoadTexture(imageData.textureKey);
+    renderrable.shaders->AssignDataToUniform(IMAGE_TEXTURE_SLOT, &slot);
+    GL(glBindVertexArray(*renderrable.vertexArrayObjectKey));
     GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
     
     GL(glBindVertexArray(0));

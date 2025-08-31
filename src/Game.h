@@ -3,8 +3,7 @@
 #include <glad/glad.h>
 #include "glfw3.h"
 #include "Logger.h"
-#include "D3Object.h"
-#include "D2Object.h"
+#include "Image.h"
 #include <string.h>
 #include <stdio.h>
 #include <fstream>
@@ -17,7 +16,6 @@
 #include "Camera.h"
 #include "Collider.h"
 #include "ShaderManaging.h"
-#include "WorldObject.h"
 #include "advancedMath.h"
 #include "AssetLoader.h"
 #include "GLerrorHandling.h"
@@ -27,7 +25,6 @@
 #include "CubemapObject.h"
 #include "Shader.h"
 #include "PhysicsSystem.h"
-#include "ModelObject.h"
 #include "TextObject.h"
 #include "TextureManager.h"
 #include "DebugDraw.h"
@@ -46,8 +43,8 @@ private:
     unsigned int currentNextId;
     unique_ptr<Renderer> renderer;
     unique_ptr<AssetLoader> assetLoader;
-    unique_ptr<GlyphCache> glyphCache;
     unique_ptr<InputSystem> inputSystem;
+    shared_ptr<GlyphCache> glyphCache;
     shared_ptr<TextureManager> textureManager;
     shared_ptr<PhysicsSystem> physicsSystem;
 

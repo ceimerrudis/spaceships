@@ -1,18 +1,26 @@
 #pragma once
 #include "GlobalInclude.h"
-#include "WorldObject.h"
-#include "D3Object.h"
 #include <glad/glad.h>
 #include "ObjectLoader.h"
-#include "ModelObject.h"
 #include "InputSystem.h"
 #include "Collider.h"
+#include "MeshData.h"
 #include "PhysicsSystem.h"
 #include <memory>
+#include "Entity.h"
+#include "Shading.h"
+#include "Transform.h"
 
 class Game;
 
-struct Asteroid: public ModelObject{
+struct Asteroid
+{
+    Entity entity;
+    Renderable renderable;
+    Shading shading;
+    Transform transform;
+    MeshData meshData;
+
     float* vertexes;
     unsigned int* indices;
     unsigned int id;
@@ -21,7 +29,7 @@ struct Asteroid: public ModelObject{
 
     void update(Game* game);
 
-    ~Asteroid() override;
+    ~Asteroid();
 
     static std::shared_ptr<solar::Mesh> GenAsteroid(unsigned int id);
 };

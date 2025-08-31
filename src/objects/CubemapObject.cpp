@@ -1,6 +1,5 @@
 #include "CubemapObject.h"
 #include "Logger.h"
-#include "WorldObject.h"
 #include "GLerrorHandling.h"
 #include <math.h>
 #include <iostream>
@@ -12,8 +11,12 @@
 #include "TextureResource.h"
 #include <memory>
 
-CubemapObject::CubemapObject(const std::shared_ptr<solar::Mesh> mesh, std::shared_ptr<Shader> shaders,  std::array<TaggedTextureResource*, 6> textures, std::shared_ptr<TextureManager> textureManager, OpenGLResourceLibrary& glResLib) 
-:   D3Object(mesh, shaders, glResLib)
+CubemapObject::CubemapObject(const std::shared_ptr<solar::Mesh> mesh, std::shared_ptr<Shader> shaders,  
+    std::array<TaggedTextureResource*, 6> textures, std::shared_ptr<TextureManager> textureManager, OpenGLResourceLibrary& glResLib) 
 {
-    textureKey = textureManager->AddCubemapTexture(GL_TEXTURE_CUBE_MAP, textures);
+    entity.ID = -1;
+    InitTransform(transform);
+    InitRenderable(renderable, shaders, glResLib);
+    InitMeshData(meshData, renderable, mesh);
+    InitModelTexture(modelTexture, textureManager->AddCubemapTexture(GL_TEXTURE_CUBE_MAP, textures));
 }

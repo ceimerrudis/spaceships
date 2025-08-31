@@ -4,30 +4,25 @@
 #include "TextureResource.h"
 #include "TextureManager.h"
 #include "GlyphCache.h"
-#include "D2Object.h"
 #include "Letter.h"
+#include "Entity.h"
+#include "TextData.h"
+#include "ImageData.h"
+#include "Renderable.h" 
+#include "UITransform.h"
 #include <vector>
 #include <memory>
 
-class TextObject : public Renderable
+class TextObject
 {
 public:
-    TextObject(OpenGLResourceLibrary& glResLib, std::shared_ptr<Shader> shaders, int size, Vector<float, 2> pos, Vector<float, 3> dir, GlyphCache& glyphCache);
+    Entity entity;
+    ImageData imageData;
+    TextData textData;
+    UITransform uiTransform;
+    Renderable renderable;
 
-    ~TextObject() override;
-
-    std::string GetText();
+    TextObject(OpenGLResourceLibrary& glResLib, std::shared_ptr<Shader> shaders, std::shared_ptr<GlyphCache> glyphCache);
     
-    void SetText(std::string newText, std::weak_ptr<TextureManager> textureManager);
-
-    std::array<float, 16> vertexes;
-    std::array<unsigned int, 6> indicies;
-    Vector<float, 3> textDir;
-
-    std::string text;
-    int size;
-    std::vector<Letter> letterTextureKeys;
-    GlyphCache& glyphCache;
-
-    Vector<float, 2> pos;
+    void SetText(std::string newText, int size, std::weak_ptr<TextureManager> textureManager);
 };

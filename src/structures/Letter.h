@@ -1,6 +1,7 @@
 #pragma once
 #include "GlobalInclude.h"
 #include "AdvancedMath.h"
+#include <memory>
 
 struct Letter
 {

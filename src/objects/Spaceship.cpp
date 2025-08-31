@@ -18,127 +18,114 @@ float clamp(float value, float min, float max)
 }
 
 Spaceship::Spaceship(unsigned int id, const std::shared_ptr<solar::Mesh> mesh, std::shared_ptr<Shader> shaders, OpenGLResourceLibrary& glResLib, PhysicsSystem& physSys)
-:   ModelObject(mesh, shaders, glResLib),
-    id(id)
 {
-    health = 20;
-    throttle = 0;
-    isAlive = true;
-    isPlayer = false;
-    fireCooldown = 0;
-    commandCooldown = 0;
-    aiThrottle = 0;
-    aiFire = 0;
-    aiYaw = 0;
-    aiRoll = 0;
-    aiPitch = 0;
-    aiMoveRight = 0;
-    aiMoveUp = 0;
-    
-    physicsData.velocity = Vector<float, 3>{0, 0, 0};
-    physicsData.angularVelocity = Vector<float, 3>{0, 0, 0};
-    
-    physSys.AddCollider(id, position, Vector<float, 3>{1.0f, 1.0f, 1.0f});
+    entity.ID = id;
+    InitTransform(transform);
+    InitSpaceshipData(spaceshipData);
+    InitRenderable(renderable, shaders,  glResLib);
+    InitMeshData(meshData, renderable, mesh);
+    InitShading(shading, renderable, meshData, glResLib);
+    physSys.AddCollider(id, transform.position, Vector<float, 3>{1.0f, 1.0f, 1.0f});
 }
 
 void Spaceship::update(InputSystem& inputSystem, Game* game)
 {
-    if(isPlayer)
+    if(spaceshipData.isPlayer)
     {
-        aiThrottle = 0;
-        aiFire = 0;
-        aiYaw = 0;
-        aiRoll = 0;
-        aiPitch = 0;
-        aiMoveRight = 0;
-        aiMoveUp = 0;
-        aiBreaks = 0;
+        spaceshipData.aiThrottle = 0;
+        spaceshipData.aiFire = 0;
+        spaceshipData.aiYaw = 0;
+        spaceshipData.aiRoll = 0;
+        spaceshipData.aiPitch = 0;
+        spaceshipData.aiMoveRight = 0;
+        spaceshipData.aiMoveUp = 0;
+        spaceshipData.aiBreaks = 0;
         
-        if(inputSystem.IsKeyHeld(BREAK_KEY)){ aiBreaks = 1;}
+        if(inputSystem.IsKeyHeld(BREAK_KEY)){ spaceshipData.aiBreaks = 1;}
         
-        if(inputSystem.IsKeyHeld(FIRE_KEY)){ aiFire = 1;}
+        if(inputSystem.IsKeyHeld(FIRE_KEY)){ spaceshipData.aiFire = 1;}
 
-        if(inputSystem.IsKeyHeld(THROTTLE_UP_KEY)){ aiThrottle += 1;}
-        if(inputSystem.IsKeyHeld(THROTTLE_DOWN_KEY)){ aiThrottle -= 1;}
+        if(inputSystem.IsKeyHeld(THROTTLE_UP_KEY)){ spaceshipData.aiThrottle += 1;}
+        if(inputSystem.IsKeyHeld(THROTTLE_DOWN_KEY)){ spaceshipData.aiThrottle -= 1;}
 
-        if(inputSystem.IsKeyHeld(YAW_RIGHT_KEY)){ aiRoll += 1;}
-        if(inputSystem.IsKeyHeld(YAW_LEFT_KEY)){ aiRoll -= 1;}
+        if(inputSystem.IsKeyHeld(YAW_RIGHT_KEY)){ spaceshipData.aiRoll += 1;}
+        if(inputSystem.IsKeyHeld(YAW_LEFT_KEY)){ spaceshipData.aiRoll -= 1;}
         
-        if(inputSystem.IsKeyHeld(MOVE_RIGHT_KEY)){ aiMoveRight += 1;}
-        if(inputSystem.IsKeyHeld(MOVE_LEFT_KEY)){ aiMoveRight -= 1;}
-        if(inputSystem.IsKeyHeld(MOVE_UP_KEY)){ aiMoveUp += 1;}
-        if(inputSystem.IsKeyHeld(MOVE_DOWN_KEY)){ aiMoveUp -= 1;}
+        if(inputSystem.IsKeyHeld(MOVE_RIGHT_KEY)){ spaceshipData.aiMoveRight += 1;}
+        if(inputSystem.IsKeyHeld(MOVE_LEFT_KEY)){ spaceshipData.aiMoveRight -= 1;}
+        if(inputSystem.IsKeyHeld(MOVE_UP_KEY)){ spaceshipData.aiMoveUp += 1;}
+        if(inputSystem.IsKeyHeld(MOVE_DOWN_KEY)){ spaceshipData.aiMoveUp -= 1;}
 
-        inputSystem.GetMouseDelta(&aiYaw, &aiPitch);
-        aiYaw  = clamp(aiYaw, -20, 20);
-        aiPitch = clamp(aiPitch, -20, 20);
+        inputSystem.GetMouseDelta(&spaceshipData.aiYaw, &spaceshipData.aiPitch);
+        spaceshipData.aiYaw  = clamp(spaceshipData.aiYaw, -20, 20);
+        spaceshipData.aiPitch = clamp(spaceshipData.aiPitch, -20, 20);
     }
     else{
         //ai
-        throttle = 10;
-        if(commandCooldown == 0)
+        spaceshipData.throttle = 10;
+        if(spaceshipData.commandCooldown == 0)
         {
-            aiYaw = RandomNegZeroPos();
-            aiRoll = RandomNegZeroPos();
-            aiPitch = RandomNegZeroPos();
+            spaceshipData.aiYaw = RandomNegZeroPos();
+            spaceshipData.aiRoll = RandomNegZeroPos();
+            spaceshipData.aiPitch = RandomNegZeroPos();
             
-            commandCooldown = COMMAND_COOLDOWN;
+            spaceshipData.commandCooldown = spaceshipData.COMMAND_COOLDOWN;
         }
         else
         {
-            commandCooldown--;
+            spaceshipData.commandCooldown--;
         }
     }
     
-    throttle += (aiThrottle);
-    if(throttle > MAX_THROTTLE)
+    spaceshipData.throttle += (spaceshipData.aiThrottle);
+    if(spaceshipData.throttle > spaceshipData.MAX_THROTTLE)
     {
-        throttle = MAX_THROTTLE;
+        spaceshipData.throttle = spaceshipData.MAX_THROTTLE;
     }
-    if(throttle < -MAX_THROTTLE)
+    if(spaceshipData.throttle < -spaceshipData.MAX_THROTTLE)
     {
-        throttle = -MAX_THROTTLE;
+        spaceshipData.throttle = -spaceshipData.MAX_THROTTLE;
     }
 
-    Vector<float, 3> thrustDir = (forward * 3) + right*aiMoveRight + up*aiMoveUp;
+    Vector<float, 3> thrustDir = (transform.forward * 3) + transform.right*spaceshipData.aiMoveRight + transform.up*spaceshipData.aiMoveUp;
     
-    physicsData.AddVelocity(thrustDir.Normalized(), float(throttle) / 80000);
+    spaceshipData.physicsData.AddVelocity(thrustDir.Normalized(), float(spaceshipData.throttle) / 80000);
     
-    physicsData.AddAngularVelocity(up, aiYaw / -40);
-    physicsData.AddAngularVelocity(forward, aiRoll / 70);
-    physicsData.AddAngularVelocity(right, aiPitch / 40);
+    spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -40);
+    spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 70);
+    spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 40);
     //Rotate(up, aiYaw / -50);
     //Rotate(forward, aiRoll / 50);
     //Rotate(right, aiPitch / 50);
     
-    physicsData.AddAngularVelocity(physicsData.angularVelocity.Normalized(), -0.001);
+    spaceshipData.physicsData.AddAngularVelocity(spaceshipData.physicsData.angularVelocity.Normalized(), -0.001);
     
-    if(aiBreaks > 0)
+    if(spaceshipData.aiBreaks > 0)
     {
-        physicsData.AddVelocity(physicsData.velocity, -0.5);
+        spaceshipData.physicsData.AddVelocity(spaceshipData.physicsData.velocity, -0.5);
     }else
     {
-        physicsData.AddVelocity(physicsData.velocity, -0.01);
+        spaceshipData.physicsData.AddVelocity(spaceshipData.physicsData.velocity, -0.01);
     }
 
-    Move(physicsData.velocity);
-    Rotate(physicsData.angularVelocity.Normalized(), physicsData.angularVelocity.Magnitude()/10);    
+    Move(transform, spaceshipData.physicsData.velocity);
+    Rotate(transform, spaceshipData.physicsData.angularVelocity.Normalized(), spaceshipData.physicsData.angularVelocity.Magnitude()/10);    
 
-    if(fireCooldown == 0)
+    if(spaceshipData.fireCooldown == 0)
     {
-        if(aiFire == 1){
+        if(spaceshipData.aiFire == 1){
             Ray laserFire = Ray{
-                id,
-                Vector<float, 3>{position.x(), position.y(), position.z()},
-                Vector<float, 3>{forward.x(), forward.y(), forward.z()}
+                entity.ID,
+                Vector<float, 3>{transform.position.x(), transform.position.y(), transform.position.z()},
+                Vector<float, 3>{transform.forward.x(), transform.forward.y(), transform.forward.z()}
             };
             game->ShootLaser(laserFire);
-            fireCooldown = FIRE_COOLDOWN;
+            spaceshipData.fireCooldown = spaceshipData.FIRE_COOLDOWN;
         }
     }
     else
     {
-        fireCooldown--;
+        spaceshipData.fireCooldown--;
     }
 }
 

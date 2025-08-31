@@ -4,9 +4,10 @@ TODO
 CRITICAL:
 
 HIGH:
-keep track of window size and dont check it each frame
+fix asteroids
 
 FEATURE:
+ui
 flight instruments
 implement ai
 implement ship textures 

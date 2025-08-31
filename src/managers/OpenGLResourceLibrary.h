@@ -3,7 +3,6 @@
 #include "glfw3.h"
 #include "GlobalInclude.h"
 #include "AdvancedMath.h"
-#include "WorldObject.h"
 #include <vector>
 #include <memory>
 

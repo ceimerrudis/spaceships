@@ -1,14 +1,14 @@
 #pragma once
 #include "GlobalInclude.h"
 #include "TextObject.h"
-#include "ModelObject.h"
 #include "CubemapObject.h"
-#include "D2Object.h"
 #include "TaggedTextureResource.h"
 #include <vector>
 #include <array>
 #include <unordered_set>
 #include "OpenGLResourceLibrary.h"
+#include "Shading.h"
+#include "ModelTexture.h"
 
 class Renderer{
 private:
@@ -16,13 +16,13 @@ private:
     Vector<int, 2> screenSize;
     std::shared_ptr<TextureManager> textureManager;
 public:
-    void Render(ModelObject* model);
+    void Render(Transform & transform, Renderable& renderrable, Shading& shading);
 
-    void Render(CubemapObject* cubemap);
+    void Render(Transform & transform, Renderable& renderrable, ModelTexture& modelTexture);
     
-    void Render(TextObject* text);
+    void Render(UITransform & transform, Renderable& renderrable, TextData& textData, ImageData& imageData);
 
-    void Render(D2Object* d2Obj);
+    void Render(UITransform & transform, Renderable& renderrable, ImageData& imageData);
 
     void SetLightDirection(Vector<float, 3> newLightDir);
 

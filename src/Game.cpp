@@ -12,7 +12,7 @@ Game::Game()
 {
     currentNextId = 1;
     assetLoader = std::make_unique<AssetLoader>(); 
-    glyphCache = std::make_unique<GlyphCache>(*assetLoader);
+    glyphCache = std::make_shared<GlyphCache>(*assetLoader);
     //Move variables out
     int cockpitImage        = assetLoader->LoadImage("cockpit.png");
     int instrumentImage     = assetLoader->LoadImage("instrument.png");
@@ -78,8 +78,8 @@ Game::Game()
     spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
 
     playerId = spaceShips.size() - 1;
-    spaceShips[playerId]->isPlayer = true;
-    spaceShips[playerId]->position.data[0] = -10;
+    spaceShips[playerId]->spaceshipData.isPlayer = true;
+    spaceShips[playerId]->transform.position.data[0] = -10;
     
     cameraUsed = std::make_unique<Camera>(spaceShips[playerId].get());
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -89,7 +89,7 @@ Game::Game()
     
     spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
     spaceShips.emplace_back(std::make_shared<Spaceship>(currentNextId++, assetLoader->meshes[0], d3ObjectShaders, *glResLib, *physicsSystem));
-    spaceShips[2]->position = Vector<float, 3>{10, 10, 4};
+    spaceShips[2]->transform.position = Vector<float, 3>{10, 10, 4};
 
     textureManager = std::make_shared<TextureManager>(*assetLoader, *glResLib);
     renderer = std::make_unique<Renderer>(textureManager);
@@ -108,23 +108,21 @@ Game::Game()
     
     //texts.emplace_back(*glResLib, textShaders, "FPS:", 28, vector2{0, 0}, vector3{1, 0, 0}, textureManager, *glyphCache);
 
-    cameraUsed->throttleText = std::make_unique<TextObject>(*glResLib, textShaders, 
-         28, //size
-         Vector<float, 2>{-0.60, -0.75}, //position
-         Vector<float, 3>{0.6, 0.6, 0},//direction
-           *glyphCache);
-    cameraUsed->PosText = std::make_unique<TextObject>(*glResLib, textShaders, 
-         28, //size
-         Vector<float, 2>{-0.30, -0.8}, //position
-         Vector<float, 3>{1, 0, 0},//direction
-           *glyphCache);
-    cameraUsed->cockpit = std::make_unique<D2Object>(imageShaders, Vector<float, 2>{-1, -1}, Vector<float, 2>{1, 1}, assetLoader->GetResource(cockpitImage), textureManager, *glResLib);
-    cameraUsed->instrument = std::make_unique<D2Object>
-    (imageShaders, Vector<float, 2>{-0.1, -0.6}, Vector<float, 2>{0.1, -0.4}, 
-    assetLoader->GetResource(instrumentImage), textureManager, *glResLib);
-    cameraUsed->indicator = std::make_unique<D2Object>
-    (imageShaders, Vector<float, 2>{-0.02, -0.52}, Vector<float, 2>{0.02, -0.48}, 
-    assetLoader->GetResource(indicatorImage), textureManager, *glResLib);
+    cameraUsed->throttleText = std::make_unique<TextObject>(*glResLib, textShaders, glyphCache);
+    SetPosition(cameraUsed->throttleText->uiTransform, Vector<float, 2>{-0.60, -0.75});
+    SetDirection(cameraUsed->throttleText->textData, Vector<float, 3>{0.6, 0.6, 0});
+    cameraUsed->PosText = std::make_unique<TextObject>(*glResLib, textShaders, glyphCache);
+    SetPosition(cameraUsed->PosText->uiTransform, Vector<float, 2>{-0.30, -0.8});
+    SetDirection(cameraUsed->PosText->textData, Vector<float, 3>{1, 0, 0});
+    cameraUsed->cockpit = std::make_unique<Image>(imageShaders, assetLoader->GetResource(cockpitImage), textureManager, *glResLib);
+    SetPosition(cameraUsed->cockpit->uiTransform, Vector<float, 2>{-1, -1});
+    SetSize(cameraUsed->cockpit->uiTransform, Vector<float, 2>{1, 1});
+    cameraUsed->instrument = std::make_unique<Image>(imageShaders, assetLoader->GetResource(instrumentImage), textureManager, *glResLib);
+    SetPosition(cameraUsed->instrument->uiTransform, Vector<float, 2>{-0.1, -0.6});
+    SetSize(cameraUsed->instrument->uiTransform, Vector<float, 2>{0.1, -0.4});
+    cameraUsed->indicator = std::make_unique<Image>(imageShaders, assetLoader->GetResource(indicatorImage), textureManager, *glResLib);
+    SetPosition(cameraUsed->indicator->uiTransform, Vector<float, 2>{-0.02, -0.52});
+    SetSize(cameraUsed->indicator->uiTransform, Vector<float, 2>{0.02, -0.48});
     
     for(int i = 0; i < 2; i++)
     {
@@ -151,9 +149,9 @@ bool Game::Update()
     bool stopGame = false;
     for(int i = 0; i < n; i++)
     {
-        if(spaceShips[i]->isAlive)
+        if(spaceShips[i]->spaceshipData.isAlive)
         {
-            if(!spaceShips[i]->isPlayer)liveEnemies++;
+            if(!spaceShips[i]->spaceshipData.isPlayer)liveEnemies++;
         
             spaceShips[i]->update(*inputSystem, this);
         }
@@ -188,7 +186,7 @@ bool Game::Update()
 
     if (glfwWindowShouldClose(window))
     {
-        KillSpaceship(spaceShips[playerId]->id);
+        KillSpaceship(spaceShips[playerId]->entity.ID);
         return false;
     }
     glfwPollEvents();
@@ -198,7 +196,7 @@ bool Game::Update()
         //LOG("camMat", cam.WorldToObserverSpaceMatrix());
         //LOG("projMat", ProjectionMatrix);
     }
-    
+
     //draw camera
     renderer->SetScreenSize(Vector<int, 2> {windowWidth, windowHeight});
     cameraUsed->Render(*renderer, textureManager);
@@ -211,7 +209,7 @@ bool Game::Update()
     n = texts.size();
     for (int i = 0; i < n; i++)
     {
-        renderer->Render(&texts[i]);
+        renderer->Render(texts[i].uiTransform, texts[i].renderable, texts[i].imageData);
     }
     //DebugDrawCollider(physicsSystem->GetFirstColliderBelongingTo(spaceShips[1]->id), spaceShips[1]->transformMatrix, Vector<float, 3>{1,0,1});
     //DebugDrawLine(Vector<float, 3>{0,0,0}, spaceShips[playerId]->forward,  Identity(), Vector<float, 3>{1,0,1});
@@ -220,22 +218,23 @@ bool Game::Update()
     //DebugDrawLine(Vector<float, 3>{0,0,0}, Vector<float, 3>{0,0,1},  Identity(), Vector<float, 3>{0,0,1});
 
     d3ObjectShaders->AssignDataToUniform(D3_OBSERVER_PLANE, cameraUsed->WorldToObserverSpaceMatrix().data);
-    d3ObjectShaders->AssignDataToUniform(D3_VIEW_POSITION, &cameraUsed->position.data[0]);
+    d3ObjectShaders->AssignDataToUniform(D3_VIEW_POSITION, &cameraUsed->transform.position.data[0]);
     n = spaceShips.size();
     for(int i = 0; i < n; i++)
     {
         if(DEBUG){
             //LOG((string)"spaceShip "+(char)('0' + i), spaceShips[i].transformMatrix);
         }
-        if(!spaceShips[i]->isPlayer && spaceShips[i]->isAlive)
+        if(!spaceShips[i]->spaceshipData.isPlayer && spaceShips[i]->spaceshipData.isAlive)
         {            
-            renderer->Render(spaceShips[i].get());
+            renderer->Render(spaceShips[i]->transform, spaceShips[i]->renderable, spaceShips[i]->shading);
         }
     }
+    
     n = asteroids.size();
     for(int i = 0; i < n; i++)
     {     
-        renderer->Render(asteroids[i].get());
+        renderer->Render(asteroids[i]->transform, asteroids[i]->renderable, asteroids[i]->shading);
     }
 
     GL(glfwSwapBuffers(window));
@@ -246,9 +245,9 @@ Game::~Game()
 {
     for(int i = 0; i < spaceShips.size(); i++)
     {
-        if(spaceShips[i]->isAlive)
+        if(spaceShips[i]->spaceshipData.isAlive)
         {
-            KillSpaceship(spaceShips[i]->id);
+            KillSpaceship(spaceShips[i]->entity.ID);
         }
     }
 }
@@ -263,7 +262,7 @@ weak_ptr<Spaceship> Game::GetSpaceShip(unsigned int id)
     int n = spaceShips.size();
     for (int i = 0; i < n; i++)
     {
-        if(spaceShips[i]->id == id)
+        if(spaceShips[i]->entity.ID == id)
         {
             return spaceShips[i];
         }
@@ -373,20 +372,20 @@ void Game::KillSpaceship(unsigned int entityId)
 {
     weak_ptr<Spaceship> shipToKill = GetSpaceShip(entityId);
     
-    if(!shipToKill.lock()->isAlive)
+    if(!shipToKill.lock()->spaceshipData.isAlive)
     {
         return;
     }
     
-    if(shipToKill.lock()->isPlayer)
+    if(shipToKill.lock()->spaceshipData.isPlayer)
     {
         LOG("Player dead!");
         glfwSetWindowShouldClose(window, true);
     }
     physicsSystem->MarkColliderForDeletion(entityId);
-    shipToKill.lock()->isAlive = false;
+    shipToKill.lock()->spaceshipData.isAlive = false;
     #if DEBUG_MEMORY
         LOG("deleted memory ", normalIndexes);
     #endif
-    delete[] shipToKill.lock()->normalIndexes;
+    delete[] shipToKill.lock()->shading.normalIndexes;
 }

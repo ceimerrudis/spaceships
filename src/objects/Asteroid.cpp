@@ -4,24 +4,30 @@
 #include "PhysicsSystem.h"
 #include "Game.h"
 #include "Random.h"
+#include "Renderable.h"
+#include "MeshData.h"
 #include <algorithm>
 #include <map>
 #include "Debugger.h"
 
 Asteroid::Asteroid(unsigned int id, std::shared_ptr<Shader> shaders, OpenGLResourceLibrary& glResLib, PhysicsSystem& physSys)
-:   ModelObject(GenAsteroid(id), shaders, glResLib),
-    id(id)
 {
-    position = {RandomF(100, 200), RandomF(100, 200), RandomF(100, 200)};
-    UpdateTransformationMatrix();
+    shared_ptr<solar::Mesh> mesh = GenAsteroid(id);
+    entity.ID = id;
+    InitTransform(transform);
+    InitRenderable(renderable, shaders, glResLib);
+    InitMeshData(meshData, renderable, mesh);
+    InitShading(shading, renderable, meshData, glResLib);
+    transform.position = {RandomF(100, 200), RandomF(100, 200), RandomF(100, 200)};
+    UpdateTransformationMatrix(transform);
     //TODO//physSys.AddCollider(id, position, Vector<float, 3>{5.0f, 5.0f, 5.0f});
 }
 
 void Asteroid::update(Game* game)
 {
     //Does whatewer a rock does
-    Rotate(up, 0.01);
-    Rotate(forward, 0.005);
+    Rotate(transform, transform.up, 0.01);
+    Rotate(transform, transform.forward, 0.005);
     //Move(forward * (float(this->throttle) / 1000));
     //Move(right * (float(this->aiMoveRight) / 10));
     //Move(up * (float(this->aiMoveUp) / 10));
