@@ -18,7 +18,7 @@ public:
     GlyphCache(AssetLoader& assetLoader);
     ~GlyphCache();
 private:
-    AssetLoader& assetLoader;
+    AssetLoader& assetLoader;//TODO fix
     std::vector<Glyph> glyphs;
 
     unsigned int lastFont;

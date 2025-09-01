@@ -11,7 +11,6 @@ ui
 flight instruments
 implement ai
 implement ship textures 
-implement pseudo randomness
 
 POLISH:
 HARD implement death animation

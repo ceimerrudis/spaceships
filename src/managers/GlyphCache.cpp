@@ -42,6 +42,7 @@ void GlyphCache::LoadCharacter(unsigned int fontKey, char32_t chr, int pixelHeig
     glyph.pixelHeight = pixelHeight;
     glyph.fontKey = fontKey;
     glyph.character = chr;
+    //TODO
     glyph.size = Vector<int, 2>{width, height};
     glyph.bearing = Vector<int, 2>{g->bitmap_left, g->bitmap_top};
     glyph.advance = g->advance.x >> 6;

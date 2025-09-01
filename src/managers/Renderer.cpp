@@ -1,6 +1,5 @@
 #include "Renderer.h"
 #include "GLerrorHandling.h"
-//TODO
 
 void Renderer::Render(Transform & transform, Renderable& renderrable, Shading& shading)
 {
@@ -104,6 +103,7 @@ void Renderer::SetLightDirection(Vector<float, 3> newLightDir)
 
 void Renderer::SetScreenSize(Vector<int, 2> newScreenSize)
 {
+    //TODO
     screenSize = newScreenSize;
 }
 

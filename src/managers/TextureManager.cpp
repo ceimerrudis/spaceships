@@ -246,5 +246,10 @@ void TextureManager::ReleaseFlatTexture(Texture& texture)
 
 TextureManager::~TextureManager()
 {
-    
+    int n = textures.size();
+    for (int i = 0; i < textures.size(); i)
+    {
+        ReleaseTexture(textures[i].textureKey);
+        if(n == textures.size()) error("Release texture did not work.");
+    }
 }

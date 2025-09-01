@@ -18,7 +18,6 @@ public:
     Transform transform;
     ModelTexture modelTexture;
 
-
     CubemapObject(const std::shared_ptr<solar::Mesh> mesh, std::shared_ptr<Shader> shaders,  
         std::array<TaggedTextureResource*, 6> textures, std::shared_ptr<TextureManager> textureManager, OpenGLResourceLibrary& glResLib); 
 };

@@ -117,10 +117,10 @@ InputSystem::InputSystem(GLFWwindow* window)
     temp.keyname = YAW_RIGHT_KEY;
     temp.keycode = GLFW_KEY_SPACE;
     inputs.push_back(temp);
-    temp.keyname = MOVE_DOWN_KEY;
+    temp.keyname = BREAK_KEY;
     temp.keycode = GLFW_KEY_S;
     inputs.push_back(temp);
-    temp.keyname = MOVE_UP_KEY;
+    temp.keyname = MOVE_FORWARD_KEY;
     temp.keycode = GLFW_KEY_W;
     inputs.push_back(temp);
     temp.keyname = MOVE_LEFT_KEY;
@@ -143,9 +143,6 @@ InputSystem::InputSystem(GLFWwindow* window)
     inputs.push_back(temp);
     temp.keyname = RELEASE_CURSOR;
     temp.keycode = GLFW_KEY_ESCAPE;
-    inputs.push_back(temp);
-    temp.keyname = BREAK_KEY;
-    temp.keycode = GLFW_KEY_LEFT_CONTROL;
     inputs.push_back(temp);
     
 

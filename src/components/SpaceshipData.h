@@ -25,7 +25,7 @@ struct SpaceshipData
     float aiPitch;
     int aiThrottle;
     int aiFire;
-    int aiMoveUp;
+    int aiMoveForward;
     int aiMoveRight;
 };
 

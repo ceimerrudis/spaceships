@@ -9,9 +9,9 @@ struct Renderable
     #if DEBUG
         bool initialized;
     #endif
-    std::shared_ptr<unsigned int> vertexArrayObjectKey;//gened automaticaly
-    std::shared_ptr<unsigned int> vertexBufferKey;//gened automaticaly
-    std::shared_ptr<unsigned int> indexBufferKey;//gened automaticaly
+    std::shared_ptr<unsigned int> vertexArrayObjectKey;
+    std::shared_ptr<unsigned int> vertexBufferKey;
+    std::shared_ptr<unsigned int> indexBufferKey;
 
     unsigned int trigCount;
     unsigned int vertexCount;
@@ -20,5 +20,3 @@ struct Renderable
 };
 
 void InitRenderable(Renderable& renderable, std::shared_ptr<Shader> shaders, OpenGLResourceLibrary& glResLib);
-
-void DestroyRenderable(Renderable& renderable);

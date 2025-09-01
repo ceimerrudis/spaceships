@@ -2,6 +2,7 @@
 #include "glad/glad.h"
 #include "GLerrorHandling.h"
 #include "Logger.h"
+#include "Random.h"
 #include "PhysicsSystem.h"
 #include "Game.h"
 #include <iostream>
@@ -9,8 +10,6 @@
 #include "ObjectLoader.h"
 #include "InputSystem.h"
 #include <random>
-
-int RandomNegZeroPos();
 
 float clamp(float value, float min, float max) 
 {
@@ -38,7 +37,7 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
         spaceshipData.aiRoll = 0;
         spaceshipData.aiPitch = 0;
         spaceshipData.aiMoveRight = 0;
-        spaceshipData.aiMoveUp = 0;
+        spaceshipData.aiMoveForward = 0;
         spaceshipData.aiBreaks = 0;
         
         if(inputSystem.IsKeyHeld(BREAK_KEY)){ spaceshipData.aiBreaks = 1;}
@@ -53,8 +52,7 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
         
         if(inputSystem.IsKeyHeld(MOVE_RIGHT_KEY)){ spaceshipData.aiMoveRight += 1;}
         if(inputSystem.IsKeyHeld(MOVE_LEFT_KEY)){ spaceshipData.aiMoveRight -= 1;}
-        if(inputSystem.IsKeyHeld(MOVE_UP_KEY)){ spaceshipData.aiMoveUp += 1;}
-        if(inputSystem.IsKeyHeld(MOVE_DOWN_KEY)){ spaceshipData.aiMoveUp -= 1;}
+        if(inputSystem.IsKeyHeld(MOVE_FORWARD_KEY)){ spaceshipData.aiMoveForward += 1;}
 
         inputSystem.GetMouseDelta(&spaceshipData.aiYaw, &spaceshipData.aiPitch);
         spaceshipData.aiYaw  = clamp(spaceshipData.aiYaw, -20, 20);
@@ -62,12 +60,12 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     }
     else{
         //ai
-        spaceshipData.throttle = 10;
+        spaceshipData.throttle = 100;
         if(spaceshipData.commandCooldown == 0)
         {
-            spaceshipData.aiYaw = RandomNegZeroPos();
-            spaceshipData.aiRoll = RandomNegZeroPos();
-            spaceshipData.aiPitch = RandomNegZeroPos();
+            spaceshipData.aiYaw = RandomF(-20, 20);
+            spaceshipData.aiRoll = RandomI(-1, 1)*20;
+            spaceshipData.aiPitch = RandomF(-20, 20);
             
             spaceshipData.commandCooldown = spaceshipData.COMMAND_COOLDOWN;
         }
@@ -87,13 +85,21 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
         spaceshipData.throttle = -spaceshipData.MAX_THROTTLE;
     }
 
-    Vector<float, 3> thrustDir = (transform.forward * 3) + transform.right*spaceshipData.aiMoveRight + transform.up*spaceshipData.aiMoveUp;
-    
+    Vector<float, 3> thrustDir;
+    if(spaceshipData.aiBreaks == 1)
+    {
+        thrustDir = Vector<float, 3> {0,0,0};
+    }
+    else
+    {
+        thrustDir = transform.forward*0.1f + transform.right*spaceshipData.aiMoveRight + transform.forward*spaceshipData.aiMoveForward;
+    }
+
     spaceshipData.physicsData.AddVelocity(thrustDir.Normalized(), float(spaceshipData.throttle) / 80000);
     
-    spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -40);
-    spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 70);
-    spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 40);
+    spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -20);
+    spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 10);
+    spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 20);
     //Rotate(up, aiYaw / -50);
     //Rotate(forward, aiRoll / 50);
     //Rotate(right, aiPitch / 50);
@@ -127,14 +133,6 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     {
         spaceshipData.fireCooldown--;
     }
-}
-
-int RandomNegZeroPos()
-{
-    static std::random_device rd;
-    static std::    mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dist(-1, 1); // Range: -1 to 1 inclusive
-    return dist(gen);
 }
 
 Spaceship::~Spaceship()

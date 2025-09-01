@@ -2,6 +2,7 @@
 #include "GlobalInclude.h"
 #include "AdvancedMath.h"
 #include <array>
+#include "Renderable.h"
 
 enum class UISpaceMode 
 {
@@ -37,6 +38,4 @@ struct UITransform
 
 void InitUITransform(UITransform& uiTransform);
 
-void SetPosition(UITransform& uiTransform, Vector<float, 2> position);
-
-void SetSize(UITransform& uiTransform, Vector<float, 2> size);
+void SetPositionAndSize(UITransform& uiTransform, Renderable& renderable, Vector<float, 2> position, Vector<float, 2> size);

@@ -22,8 +22,7 @@
 #define THROTTLE_DOWN_KEY 8
 #define FIRE_KEY 9
 #define RELEASE_CURSOR 10
-#define MOVE_UP_KEY 11
-#define MOVE_DOWN_KEY 12
+#define MOVE_FORWARD_KEY 11
 #define MOVE_LEFT_KEY 13
 #define MOVE_RIGHT_KEY 14
 #define BREAK_KEY 15

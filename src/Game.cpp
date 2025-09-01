@@ -44,6 +44,7 @@ Game::Game()
         game->skyboxShaders->AssignDataToUniform(SKYBOX_PROJECTION_MATRIX, (game->cameraUsed->projectionMatrix).data);
         game->windowWidth = width;
         game->windowHeight = height;
+        game->renderer->SetScreenSize(Vector<int, 2> {width, height});
     });
 
     glResLib = std::make_unique<OpenGLResourceLibrary>();
@@ -94,6 +95,7 @@ Game::Game()
     textureManager = std::make_shared<TextureManager>(*assetLoader, *glResLib);
     renderer = std::make_unique<Renderer>(textureManager);
     renderer->SetLightDirection(Vector<float, 3>{0.468521, 0.624695, -0.624695});
+    renderer->SetScreenSize(Vector<int, 2> {windowWidth, windowHeight});
 
     cameraUsed->skybox = std::make_unique<CubemapObject>(assetLoader->meshes[1], skyboxShaders, std::array<TaggedTextureResource*, 6>
         {
@@ -109,20 +111,17 @@ Game::Game()
     //texts.emplace_back(*glResLib, textShaders, "FPS:", 28, vector2{0, 0}, vector3{1, 0, 0}, textureManager, *glyphCache);
 
     cameraUsed->throttleText = std::make_unique<TextObject>(*glResLib, textShaders, glyphCache);
-    SetPosition(cameraUsed->throttleText->uiTransform, Vector<float, 2>{-0.60, -0.75});
+    SetPositionAndSize(cameraUsed->throttleText->uiTransform, cameraUsed->throttleText->renderable, Vector<float, 2>{-0.60, -0.75}, Vector<float, 2>{0, 0});
     SetDirection(cameraUsed->throttleText->textData, Vector<float, 3>{0.6, 0.6, 0});
     cameraUsed->PosText = std::make_unique<TextObject>(*glResLib, textShaders, glyphCache);
-    SetPosition(cameraUsed->PosText->uiTransform, Vector<float, 2>{-0.30, -0.8});
+    SetPositionAndSize(cameraUsed->PosText->uiTransform, cameraUsed->PosText->renderable, Vector<float, 2>{-0.30, -0.8}, Vector<float, 2>{0, 0});
     SetDirection(cameraUsed->PosText->textData, Vector<float, 3>{1, 0, 0});
     cameraUsed->cockpit = std::make_unique<Image>(imageShaders, assetLoader->GetResource(cockpitImage), textureManager, *glResLib);
-    SetPosition(cameraUsed->cockpit->uiTransform, Vector<float, 2>{-1, -1});
-    SetSize(cameraUsed->cockpit->uiTransform, Vector<float, 2>{1, 1});
+    SetPositionAndSize(cameraUsed->cockpit->uiTransform, cameraUsed->cockpit->renderable, Vector<float, 2>{-1, -1}, Vector<float, 2>{2, 2});
     cameraUsed->instrument = std::make_unique<Image>(imageShaders, assetLoader->GetResource(instrumentImage), textureManager, *glResLib);
-    SetPosition(cameraUsed->instrument->uiTransform, Vector<float, 2>{-0.1, -0.6});
-    SetSize(cameraUsed->instrument->uiTransform, Vector<float, 2>{0.1, -0.4});
+    SetPositionAndSize(cameraUsed->instrument->uiTransform, cameraUsed->instrument->renderable, Vector<float, 2>{-0.1, -0.6}, Vector<float, 2>{0.2, 0.2});
     cameraUsed->indicator = std::make_unique<Image>(imageShaders, assetLoader->GetResource(indicatorImage), textureManager, *glResLib);
-    SetPosition(cameraUsed->indicator->uiTransform, Vector<float, 2>{-0.02, -0.52});
-    SetSize(cameraUsed->indicator->uiTransform, Vector<float, 2>{0.02, -0.48});
+    SetPositionAndSize(cameraUsed->indicator->uiTransform, cameraUsed->indicator->renderable, Vector<float, 2>{-0.02, -0.52}, Vector<float, 2>{0.04, 0.04});
     
     for(int i = 0; i < 2; i++)
     {
@@ -198,7 +197,6 @@ bool Game::Update()
     }
 
     //draw camera
-    renderer->SetScreenSize(Vector<int, 2> {windowWidth, windowHeight});
     cameraUsed->Render(*renderer, textureManager);
 
     //draw spaceships
@@ -250,6 +248,28 @@ Game::~Game()
             KillSpaceship(spaceShips[i]->entity.ID);
         }
     }
+
+    spaceShips.clear();
+    asteroids.clear();
+    texts.clear();
+    cameraUsed.reset();
+    
+    textShaders.reset();
+    imageShaders.reset();
+    d3ObjectShaders.reset();
+    skyboxShaders.reset();
+    
+    physicsSystem.reset();
+    inputSystem.reset();
+    renderer.reset();
+
+    glyphCache.reset();
+   
+    textureManager.reset();
+    
+    assetLoader.reset();
+
+    glResLib.reset();
 }
 
 void Game::ShootLaser(Ray fireRay)

@@ -11,12 +11,3 @@ void InitRenderable(Renderable& renderable, std::shared_ptr<Shader> shaders, Ope
     renderable.indexBufferKey = glResLib.CreateBuffer();
     renderable.vertexArrayObjectKey = glResLib.CreateVertexArrayObject();
 }
-
-void DestroyRenderable(Renderable& renderable)
-{
-    //if(renderable.textureKey != nullptr)
-    //{
-    //    LOG("TODO");
-    //    //textureManager->ReleaseTexture(textureKey);
-    //}
-}

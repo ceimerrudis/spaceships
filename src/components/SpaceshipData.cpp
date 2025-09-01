@@ -17,7 +17,7 @@ void InitSpaceshipData(SpaceshipData& spaceshipData)
     spaceshipData.aiRoll = 0;
     spaceshipData.aiPitch = 0;
     spaceshipData.aiMoveRight = 0;
-    spaceshipData.aiMoveUp = 0;
+    spaceshipData.aiMoveForward = 0;
     spaceshipData.physicsData.velocity = Vector<float, 3>{0, 0, 0};
     spaceshipData.physicsData.angularVelocity = Vector<float, 3>{0, 0, 0};
 }
