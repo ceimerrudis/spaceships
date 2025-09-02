@@ -29,3 +29,5 @@ void UpdateTransformationMatrix(Transform& transform);
 Vector<float, 3> rodriguesRotate(const Vector<float, 3>& v, const Vector<float, 3>& k, double theta);
 
 void Orthonormalize(Transform& transform);
+
+void LookAt(Transform& transform, Vector<float, 3> lookAt);

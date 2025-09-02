@@ -32,7 +32,7 @@ Vector<T, N> Vector<T, N>::Normalized() const
 {
     float len = Magnitude();
     Vector<T, N> result;
-    if (len == 0.0f)
+    if (len <= 0.000001f)
     {
         result.Init0();
     }

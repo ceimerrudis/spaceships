@@ -30,3 +30,8 @@ Matrix<float, 4>  CreateProjectionMatrix(int width, int height, float size)
     //*/
     return ProjectionMatrix;
 }
+
+float clamp(float value, float min, float max) 
+{
+    return std::max(min, std::min(max, value));
+}

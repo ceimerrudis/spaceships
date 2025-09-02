@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include <array>
+#include <math.h>
 
 void Move(Transform& transform, float x, float y, float z)
 {
@@ -15,6 +16,12 @@ void Rotate(Transform& transform, Vector<float, 3> axis, float angle)
     transform.right = rodriguesRotate(transform.right, axis, angle);
     transform.forward = rodriguesRotate(transform.forward, axis, angle);
     UpdateTransformationMatrix(transform);
+}
+
+void LookAt(Transform& transform, Vector<float, 3> lookAt){
+    Vector<float, 3> axis = (transform.forward * lookAt).Normalized();
+    float angle = acosf(clamp(transform.forward % lookAt, -1.0f, 1.0f));
+    Rotate(transform, axis, angle);
 }
 
 void UpdateTransformationMatrix(Transform& transform)

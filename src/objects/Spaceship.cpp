@@ -11,11 +11,6 @@
 #include "InputSystem.h"
 #include <random>
 
-float clamp(float value, float min, float max) 
-{
-    return std::max(min, std::min(max, value));
-}
-
 Spaceship::Spaceship(unsigned int id, const std::shared_ptr<solar::Mesh> mesh, std::shared_ptr<Shader> shaders, OpenGLResourceLibrary& glResLib, PhysicsSystem& physSys)
 {
     entity.ID = id;
@@ -49,23 +44,24 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
 
         if(inputSystem.IsKeyHeld(YAW_RIGHT_KEY)){ spaceshipData.aiRoll += 1;}
         if(inputSystem.IsKeyHeld(YAW_LEFT_KEY)){ spaceshipData.aiRoll -= 1;}
+        spaceshipData.aiRoll *= 80;
         
         if(inputSystem.IsKeyHeld(MOVE_RIGHT_KEY)){ spaceshipData.aiMoveRight += 1;}
         if(inputSystem.IsKeyHeld(MOVE_LEFT_KEY)){ spaceshipData.aiMoveRight -= 1;}
         if(inputSystem.IsKeyHeld(MOVE_FORWARD_KEY)){ spaceshipData.aiMoveForward += 1;}
 
         inputSystem.GetMouseDelta(&spaceshipData.aiYaw, &spaceshipData.aiPitch);
-        spaceshipData.aiYaw  = clamp(spaceshipData.aiYaw, -20, 20);
-        spaceshipData.aiPitch = clamp(spaceshipData.aiPitch, -20, 20);
+        //spaceshipData.aiYaw  = clamp(spaceshipData.aiYaw, -80, 80);
+        //spaceshipData.aiPitch = clamp(spaceshipData.aiPitch, -80, 80);
     }
     else{
         //ai
         spaceshipData.throttle = 100;
         if(spaceshipData.commandCooldown == 0)
         {
-            spaceshipData.aiYaw = RandomF(-20, 20);
-            spaceshipData.aiRoll = RandomI(-1, 1)*20;
-            spaceshipData.aiPitch = RandomF(-20, 20);
+            spaceshipData.aiYaw = RandomF(-80, 80);
+            spaceshipData.aiRoll = RandomI(-1, 1)*80;
+            spaceshipData.aiPitch = RandomF(-80, 80);
             
             spaceshipData.commandCooldown = spaceshipData.COMMAND_COOLDOWN;
         }
@@ -94,12 +90,11 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     {
         thrustDir = transform.forward*0.1f + transform.right*spaceshipData.aiMoveRight + transform.forward*spaceshipData.aiMoveForward;
     }
-
     spaceshipData.physicsData.AddVelocity(thrustDir.Normalized(), float(spaceshipData.throttle) / 80000);
     
-    spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -20);
-    spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 10);
-    spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 20);
+    //spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -1600);
+    spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 1600);
+    //spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 1600);
     //Rotate(up, aiYaw / -50);
     //Rotate(forward, aiRoll / 50);
     //Rotate(right, aiPitch / 50);
@@ -108,14 +103,16 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     
     if(spaceshipData.aiBreaks > 0)
     {
-        spaceshipData.physicsData.AddVelocity(spaceshipData.physicsData.velocity, -0.5);
+        spaceshipData.physicsData.AddVelocity(spaceshipData.physicsData.velocity, -0.05);
     }else
     {
         spaceshipData.physicsData.AddVelocity(spaceshipData.physicsData.velocity, -0.01);
     }
 
     Move(transform, spaceshipData.physicsData.velocity);
-    Rotate(transform, spaceshipData.physicsData.angularVelocity.Normalized(), spaceshipData.physicsData.angularVelocity.Magnitude()/10);    
+    Rotate(transform, spaceshipData.physicsData.angularVelocity.Normalized(), spaceshipData.physicsData.angularVelocity.Magnitude());    
+    LookAt(transform, spaceshipData.physicsData.velocity);
+
 
     if(spaceshipData.fireCooldown == 0)
     {
