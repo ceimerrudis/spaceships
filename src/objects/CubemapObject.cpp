@@ -1,6 +1,6 @@
 #include "CubemapObject.h"
 #include "Logger.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include <math.h>
 #include <iostream>
 #include <array>

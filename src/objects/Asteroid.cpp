@@ -1,6 +1,6 @@
 #include "Asteroid.h"
 #include "glad/glad.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "PhysicsSystem.h"
 #include "Game.h"
 #include "Random.h"

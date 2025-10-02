@@ -1,4 +1,4 @@
-#include "advancedMath.h"
+#include "AdvancedMath.h"
 #include "Matrix.h"
 #include "Vector.h"
 #include <math.h>

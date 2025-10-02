@@ -1,5 +1,5 @@
 #include "ShaderManaging.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "Logger.h"
 #include "Shader.h"
 #include <iostream>

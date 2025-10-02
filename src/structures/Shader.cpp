@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "GlErrorHandling.h"
+#include "GLErrorHandling.h"
 
 void Shader::AddUniform(std::string commonName, std::string realName, UniformType dataType)
 {

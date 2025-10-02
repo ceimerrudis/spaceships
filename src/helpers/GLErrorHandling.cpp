@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include "glfw3.h"
 #include <iostream>
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 
 bool GLLogCall(const char* fileName, int line) {
     bool notok = false;

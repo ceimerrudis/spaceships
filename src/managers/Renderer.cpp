@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 
 void Renderer::Render(Transform & transform, Renderable& renderrable, Shading& shading)
 {

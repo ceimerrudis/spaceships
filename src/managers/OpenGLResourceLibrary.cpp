@@ -1,5 +1,5 @@
 #include "OpenGLResourceLibrary.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 
 std::shared_ptr<unsigned int> OpenGLResourceLibrary::CreateBuffer()
 {

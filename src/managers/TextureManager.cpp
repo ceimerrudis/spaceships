@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 #include "glad/glad.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "OpenGLResourceLibrary.h"
 #include "AssetLoader.h"
 #include <vector>

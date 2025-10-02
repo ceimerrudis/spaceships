@@ -1,6 +1,6 @@
 #pragma once
 #include "GlobalInclude.h"
-#include "advancedMath.h"
+#include "AdvancedMath.h"
 #include <memory>
 
 struct PhysicsData

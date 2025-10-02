@@ -3,7 +3,7 @@
 TODO 
 CRITICAL:
 
-HIGH:
+HIGH: 
 fix asteroids
 
 FEATURE:
@@ -26,7 +26,9 @@ int main()
         }//Destroy game and if that succeeds then 0
         glfwTerminate();//must terminate glfw after Game is destroyed a valid opengl context is nescasary for buffer deletion
     }
+#if DEBUG
     LOG("close success");
+#endif
     return 0;
 }
 

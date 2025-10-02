@@ -1,5 +1,5 @@
 #include "TextObject.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include <glad/glad.h>
 #include "glfw3.h" 
 #include "TextData.h" 

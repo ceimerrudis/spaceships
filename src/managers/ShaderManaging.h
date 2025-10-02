@@ -1,6 +1,6 @@
 #pragma once
 #include "GlobalInclude.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "OpenGLResourceLibrary.h"
 #include <memory>
 #include "Shader.h"

@@ -1,5 +1,5 @@
 #include "Vector.h"
-#include <Math.h>
+#include <math.h>
 
 template class Vector<float, 3>;
 template class Vector<float, 4>;

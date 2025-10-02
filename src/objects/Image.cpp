@@ -3,7 +3,7 @@
 #include <iostream>
 #include <array>
 #include "AdvancedMath.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "glad/glad.h"
 #include "TextureResource.h"
 #include "TextureManager.h"

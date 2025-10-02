@@ -1,6 +1,6 @@
-#include "SpaceShip.h"
+#include "Spaceship.h"
 #include "glad/glad.h"
-#include "GLerrorHandling.h"
+#include "GLErrorHandling.h"
 #include "Logger.h"
 #include "Random.h"
 #include "PhysicsSystem.h"
