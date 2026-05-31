@@ -1,0 +1,7 @@
+#!/bin/bash
+cd build
+echo making
+cmake ..
+echo building
+cmake --build . --target clean
+asd

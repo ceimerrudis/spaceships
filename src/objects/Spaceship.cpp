@@ -92,9 +92,9 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
     }
     spaceshipData.physicsData.AddVelocity(thrustDir.Normalized(), float(spaceshipData.throttle) / 80000);
     
-    //spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -1600);
+    spaceshipData.physicsData.AddAngularVelocity(transform.up, spaceshipData.aiYaw / -1600);
     spaceshipData.physicsData.AddAngularVelocity(transform.forward, spaceshipData.aiRoll / 1600);
-    //spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 1600);
+    spaceshipData.physicsData.AddAngularVelocity(transform.right, spaceshipData.aiPitch / 1600);
     //Rotate(up, aiYaw / -50);
     //Rotate(forward, aiRoll / 50);
     //Rotate(right, aiPitch / 50);
@@ -111,7 +111,7 @@ void Spaceship::update(InputSystem& inputSystem, Game* game)
 
     Move(transform, spaceshipData.physicsData.velocity);
     Rotate(transform, spaceshipData.physicsData.angularVelocity.Normalized(), spaceshipData.physicsData.angularVelocity.Magnitude());    
-    LookAt(transform, spaceshipData.physicsData.velocity);
+    //LookAt(transform, spaceshipData.physicsData.velocity);
 
 
     if(spaceshipData.fireCooldown == 0)

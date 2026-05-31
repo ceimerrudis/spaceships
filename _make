@@ -5,3 +5,9 @@ cmake ..
 echo building
 cmake --build . --target clean
 
+#cp ../cat/cat_source/build/libcat.so tactics_rpg_source/dependencies/cat/
+#cp -r ../cat/cat_source/include tactics_rpg_source/dependencies/cat/
+#cd spaceships
+#cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+#cp build/compile_commands.json ../
+
