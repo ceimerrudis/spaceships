@@ -1,0 +1,7 @@
+#!/bin/bash
+cp ../../cat/cat_source/build/libcat.so dependencies/cat/
+#cp -r ../../cat/cat_source/include dependencies/cat/
+cd build
+echo building
+cmake --build . && chmod +x spaceships && ./spaceships
+

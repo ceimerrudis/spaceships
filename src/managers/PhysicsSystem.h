@@ -1,38 +1,32 @@
 #pragma once
 #include "GlobalInclude.h"
-#include "AdvancedMath.h"
 #include <memory>
 #include <vector>
 #include "Collider.h"
+#include "Ray.h"
+#include "PositionedCollider.h"
+#include "cat/cat.h"
 
-class Game;
+class SpaceshipGame;
 
 class PhysicsSystem
 {
 private:
     const float COLLIDERS_TOO_FAR_DISTANCE = 20;
-    std::vector<Collider> colliders;
-    std::vector<unsigned int> collidersToKill;
 
-    bool RayIntersectsAABB(const Collider col, const Ray& ray);
+    bool RayIntersectsAABB(const PositionedCollider col, const Ray& ray);
 
-    bool RayCast(const Collider col, const Ray ray);
+    bool RayCast(const PositionedCollider col, const Ray ray);
 
-    bool SAT(const Collider col1, const Collider col2);
+    bool SAT(const PositionedCollider col1, const PositionedCollider col2);
 
-    bool IsSeperationPlane(const Vector<float, 3>& relativePos, const Vector<float, 3> plane, const Collider& col1, const Collider& col2);
-    
-    void RemoveCollider(unsigned int entityId);
+    bool IsSeperationPlane(const cat::Vector<float, 3>& relativePos, const cat::Vector<float, 3> plane, const PositionedCollider& col1, const PositionedCollider& col2);
+	
+	std::vector<PositionedCollider> GetAllColliders(SpaceshipGame* game);
+	
 public:
-    void AddCollider(unsigned int id, Vector<float, 3> pos, Vector<float, 3> dimensions);
+    void CheckCollisions(SpaceshipGame* game);
 
-    void CheckCollisions(Game* game);
+    void ShootLaser(Ray fireRay, SpaceshipGame* game); 
 
-    void ShootLaser(Ray fireRay, Game* game);
-
-    Collider& GetFirstColliderBelongingTo(unsigned int id);
-
-    void MarkColliderForDeletion(unsigned int entityId);
-
-    void Cleanup();
 };

@@ -1,6 +1,2 @@
 #!/bin/bash
-cd build
-cmake --build .
-chmod +x spaceships
- ./spaceships
-
+cd build && cmake --build . && chmod +x spaceships && ./spaceships

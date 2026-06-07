@@ -1,5 +1,4 @@
 #!/bin/bash
 cd build
-cmake -G "UNIX Makefiles" ../ -DCMAKE_BUILD_TYPE=Debug
-cmake --build . --target clean
-gdb spaceships
+cmake -G "UNIX Makefiles" ../ -DCMAKE_BUILD_TYPE=Debug 
+cmake --build . 

@@ -1,125 +1,138 @@
 #include "PhysicsSystem.h"
-#include "Game.h"
+#include "SpaceshipGame.h"
 #include <memory>
 #include <cmath> 
 #include <algorithm>
+#include <span>
 
-void PhysicsSystem::AddCollider(unsigned int id, Vector<float, 3> pos, Vector<float, 3> dimensions)
+std::vector<PositionedCollider> PhysicsSystem::GetAllColliders(SpaceshipGame* game)
 {
-    Collider col;
-    col.entityId = id;
-    col.pos = pos;
-    col.width = dimensions.x();
-    col.height = dimensions.y();
-    col.length = dimensions.z();
-    Matrix<float, 3> rotation;
-    colliders.push_back(col);
-}
-
-void PhysicsSystem::CheckCollisions(Game* game)
-{
+	std::span<const cat::Entity> colliders = game->GetAllEntitiesWithComponent<Collider>();
     int n = colliders.size();
     
-    for(int i = 0; i < n; i++)
+	std::vector<PositionedCollider> full_colliders;
+	full_colliders.reserve(colliders.size());
+	for(int i = 0; i < n; i++)
     {
-        weak_ptr<Spaceship> ship = game->GetSpaceShip(colliders[i].entityId);
-        colliders[i].pos = ship.lock()->transform.position;
-        colliders[i].rotation = ship.lock()->transform.transformMatrix.ReduceDimensions();
+		Collider& collider = colliders[i].GetComponent<Collider>(game);
+        if(colliders[i].HasComponent<cat::Transform>(game))
+		{
+			cat::Transform& transform = colliders[i].GetComponent<cat::Transform>(game);
+			full_colliders.push_back(PositionedCollider(
+				colliders[i],
+				collider,
+				transform
+			));
+		} else {
+			full_colliders.push_back(PositionedCollider(
+				colliders[i],
+				collider
+			));
+		}
     }
+	
+	return full_colliders;
+}
 
+void PhysicsSystem::CheckCollisions(SpaceshipGame* game)
+{
+	std::vector<PositionedCollider> colliders = GetAllColliders(game);
+	int n = colliders.size();
     for(int i = 0; i < n; i++)
     {   
         for(int j = i+1; j < n; j++)
         {
-            if((colliders[i].pos - colliders[j].pos).Magnitude() < COLLIDERS_TOO_FAR_DISTANCE)
+            if((colliders[i].true_position - colliders[j].true_position).Magnitude() < COLLIDERS_TOO_FAR_DISTANCE)
             {
                 if(SAT(colliders[i], colliders[j]))
                 {
-                    game->KillSpaceship(colliders[j].entityId);
-                    game->KillSpaceship(colliders[i].entityId);
+					//LOG("TODO collision");
+                    //game->KillSpaceship(colliders[j].entityId);
+                    //game->KillSpaceship(colliders[i].entityId);
                 }
             }
         }
     }
 }
 
-void PhysicsSystem::ShootLaser(Ray fireRay, Game* game)
+void PhysicsSystem::ShootLaser(Ray fireRay, SpaceshipGame* game)
 {
-    int n = colliders.size();
+    std::vector<PositionedCollider> colliders = GetAllColliders(game);
+	int n = colliders.size();
     for (int i = 0; i < n; i++)
     {
-        if(fireRay.shooterId != colliders[i].entityId){
+        if(fireRay.shooterEntity.entity != colliders[i].entity)
+		{
             if(RayCast(colliders[i], fireRay))
             {
-                game->KillSpaceship(colliders[i].entityId);
+				LOG("TODO spacheip shot");
+                //game->KillSpaceship(colliders[i].entityId);
             }
         }
     }
 }
 
-bool PhysicsSystem::SAT(const Collider col1, const Collider col2)
+bool PhysicsSystem::SAT(const PositionedCollider col1, const PositionedCollider col2)
 {
-    Vector<float, 3> relativePos = col1.pos - col2.pos;
+    cat::Vector<float, 3> relativePos = col1.true_position - col2.true_position;
 
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(0),    col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(1),    col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(2),    col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col2.rotation.GetCol(0),    col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col2.rotation.GetCol(1),    col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col2.rotation.GetCol(2),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(0),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(1),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(2),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col2.true_rotation.GetCol(0),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col2.true_rotation.GetCol(1),    col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col2.true_rotation.GetCol(2),    col1, col2)) return false;
     
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(0) * col2.rotation.GetCol(0),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(0) * col2.rotation.GetCol(1),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(0) * col2.rotation.GetCol(2),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(1) * col2.rotation.GetCol(0),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(1) * col2.rotation.GetCol(1),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(1) * col2.rotation.GetCol(2),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(2) * col2.rotation.GetCol(0),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(2) * col2.rotation.GetCol(1),         col1, col2)) return false;
-    if(IsSeperationPlane(relativePos, col1.rotation.GetCol(2) * col2.rotation.GetCol(2),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(0) * col2.true_rotation.GetCol(0),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(0) * col2.true_rotation.GetCol(1),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(0) * col2.true_rotation.GetCol(2),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(1) * col2.true_rotation.GetCol(0),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(1) * col2.true_rotation.GetCol(1),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(1) * col2.true_rotation.GetCol(2),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(2) * col2.true_rotation.GetCol(0),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(2) * col2.true_rotation.GetCol(1),         col1, col2)) return false;
+    if(IsSeperationPlane(relativePos, col1.true_rotation.GetCol(2) * col2.true_rotation.GetCol(2),         col1, col2)) return false;
 
     return true;
 }
 
-bool PhysicsSystem::IsSeperationPlane(const Vector<float, 3>& relativePos, const Vector<float, 3> plane, const Collider& col1, const Collider& col2)
+bool PhysicsSystem::IsSeperationPlane(const cat::Vector<float, 3>& relativePos, const cat::Vector<float, 3> plane, 
+const PositionedCollider& col1, const PositionedCollider& col2)
 {
     return (fabs(relativePos % plane) > 
         (
-            fabs(col1.rotation.GetCol(0) * (col1.width  / 2)  % plane) + 
-            fabs(col1.rotation.GetCol(1) * (col1.height / 2)  % plane) +
-            fabs(col1.rotation.GetCol(2) * (col1.length / 2)  % plane) +
-            fabs(col2.rotation.GetCol(0) * (col2.width  / 2)  % plane) + 
-            fabs(col2.rotation.GetCol(1) * (col2.height / 2)  % plane) + 
-            fabs(col2.rotation.GetCol(2) * (col2.length / 2)  % plane)
+            fabs(col1.true_rotation.GetCol(0) * (col1.dimensions.x()  / 2)  % plane) + 
+            fabs(col1.true_rotation.GetCol(1) * (col1.dimensions.y() / 2)  % plane) +
+            fabs(col1.true_rotation.GetCol(2) * (col1.dimensions.z() / 2)  % plane) +
+            fabs(col2.true_rotation.GetCol(0) * (col2.dimensions.x()  / 2)  % plane) + 
+            fabs(col2.true_rotation.GetCol(1) * (col2.dimensions.y() / 2)  % plane) + 
+            fabs(col2.true_rotation.GetCol(2) * (col2.dimensions.z() / 2)  % plane)
         )
     );
 }
 
-bool PhysicsSystem::RayCast(const Collider col, const Ray ray)
-{   
-    Ray transformedRay;
-    transformedRay.origin = ray.origin - col.pos;
-    Matrix<float, 3> transposedRotMat = col.rotation.Transpose();
-    transformedRay.origin = transposedRotMat * transformedRay.origin;
-    transformedRay.direction = transposedRotMat * ray.direction;
-    return RayIntersectsAABB(col, transformedRay);
+bool PhysicsSystem::RayCast(const PositionedCollider col, const Ray ray)
+{
+    cat::Matrix<float, 3> transposedRotMat = col.true_rotation.Transpose();
+    Ray transformedRay(ray.shooterEntity, transposedRotMat * (ray.origin - col.true_position), transposedRotMat * ray.direction);
+	return RayIntersectsAABB(col, transformedRay);
 }
 
-
-bool PhysicsSystem::RayIntersectsAABB(const Collider col, const Ray& ray) {
+bool PhysicsSystem::RayIntersectsAABB(const PositionedCollider col, const Ray& ray) 
+{
     float tMin = -INFINITY;
     float tMax = INFINITY;
     
-    Vector<float, 3> boxMin = {
-        -col.width / 2.0f,
-        -col.height / 2.0f,
-        -col.length / 2.0f
+    cat::Vector<float, 3> boxMin = {
+        -col.dimensions.x() / 2.0f,
+        -col.dimensions.y() / 2.0f,
+        -col.dimensions.z() / 2.0f
     };
 
-    Vector<float, 3> boxMax = {
-        col.width / 2.0f,
-        col.height / 2.0f,
-        col.length / 2.0f
+    cat::Vector<float, 3> boxMax = {
+        col.dimensions.x() / 2.0f,
+        col.dimensions.y() / 2.0f,
+        col.dimensions.z() / 2.0f
     };
 
     for (int i = 0; i < 3; ++i) {
@@ -150,45 +163,4 @@ bool PhysicsSystem::RayIntersectsAABB(const Collider col, const Ray& ray) {
     }
 
     return true;
-}
-
-Collider& PhysicsSystem::GetFirstColliderBelongingTo(unsigned int id)
-{
-    int n = colliders.size();
-    for (int i = 0; i < n; i++)
-    {
-        if(colliders[i].entityId == id)
-        {
-            return colliders[i];
-        }
-    }
-    error("error");
-}
-
-
-void PhysicsSystem::MarkColliderForDeletion(unsigned int entityId)
-{
-    collidersToKill.emplace_back(entityId);
-}
-
-void PhysicsSystem::RemoveCollider(unsigned int entityId)
-{
-    colliders.erase(
-        std::remove_if(
-            colliders.begin(),
-            colliders.end(),
-            [entityId](const Collider& c) {
-                return c.entityId == entityId;
-            }),
-        colliders.end()
-    );
-}
-
-void PhysicsSystem::Cleanup()
-{
-    int n = collidersToKill.size();
-    for (int i = 0; i < n; i++)
-    {
-        RemoveCollider(collidersToKill[i]);
-    }
 }

@@ -1,14 +1,14 @@
 #pragma once
 #include "GlobalInclude.h"
-#include "AdvancedMath.h"
+#include "cat/cat.h"
 #include <memory>
 
 struct PhysicsData
 {
-    Vector<float, 3> velocity;
-    Vector<float, 3> angularVelocity;
+    cat::Vector<float, 3> velocity;
+    cat::Vector<float, 3> angularVelocity;
     
-    void AddVelocity(Vector<float, 3> direction, float amount);
+    void AddVelocity(cat::Vector<float, 3> direction, float amount);
     
-    void AddAngularVelocity(Vector<float, 3> axis, float amount);
+    void AddAngularVelocity(cat::Vector<float, 3> axis, float amount);
 };

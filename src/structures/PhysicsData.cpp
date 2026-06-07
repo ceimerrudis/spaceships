@@ -1,6 +1,6 @@
 #include "PhysicsData.h"
 
-void PhysicsData::AddVelocity(Vector<float, 3> direction, float amount)
+void PhysicsData::AddVelocity(cat::Vector<float, 3> direction, float amount)
 {
     velocity = velocity + (direction * amount);
     if(velocity.Magnitude() > 10)
@@ -9,7 +9,7 @@ void PhysicsData::AddVelocity(Vector<float, 3> direction, float amount)
     }
 }
     
-void PhysicsData::AddAngularVelocity(Vector<float, 3> axis, float amount)
+void PhysicsData::AddAngularVelocity(cat::Vector<float, 3> axis, float amount)
 {
     angularVelocity = angularVelocity + (axis * amount);
     if(angularVelocity.Magnitude() > 0.08)

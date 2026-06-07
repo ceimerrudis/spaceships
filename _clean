@@ -1,0 +1,4 @@
+#!/bin/bash
+cd build
+[ "$(basename "$PWD")" = "build" ] && rm -rf ./*
+

@@ -1,12 +1,11 @@
 #pragma once
+#include "cat/cat.h"
 #include "GlobalInclude.h"
 #include "PhysicsData.h"
+#include "SpaceshipGame.h"
 
 struct SpaceshipData 
 {
-    #if DEBUG
-        bool initialized;
-    #endif
     const int MAX_THROTTLE = 150;
     const int COMMAND_COOLDOWN = 500;
     const int FIRE_COOLDOWN = 100;
@@ -27,6 +26,11 @@ struct SpaceshipData
     int aiFire;
     int aiMoveForward;
     int aiMoveRight;
+	
+	SpaceshipData();
+	
+	void Update(const cat::InputSystem& inputSystem, cat::Game* game, std::shared_ptr<cat::EntityHandle> spacehipEntity);
+	
 };
 
-void InitSpaceshipData(SpaceshipData& spaceshipData);
+
