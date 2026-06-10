@@ -1,9 +1,10 @@
 #include "SpaceshipGame.h"
+#include "cat/cat.h"
 #include <csignal>
 
 int main()
 {
-	cat::CAT_DEBUG_LOG_SOURCE_IN_FILE = true;
+	CAT_DEBUG_LOG_SOURCE_IN_FILE = true;
 	cat::Logger::Init();
 	{
 		SpaceshipGame game;

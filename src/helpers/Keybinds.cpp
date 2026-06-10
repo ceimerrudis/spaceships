@@ -67,8 +67,11 @@ void SpaceshipGame::InitKeybinds()
 	temp.keyname = QUIT_GAME;
     temp.keycode = KEY_F10;
 	inputSystem->AddKey(temp);
+	temp.keyname = FULLSCREEN;
+    temp.keycode = KEY_F11;
+	inputSystem->AddKey(temp);
 	
 	temp.keyname = 20;
-    temp.keycode = KEY_F11;
+    temp.keycode = KEY_F4;
 	inputSystem->AddKey(temp);
 }

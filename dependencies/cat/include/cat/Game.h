@@ -41,6 +41,8 @@ class UITransform;
 class Game
 {
 public:
+	bool debugColor = false;
+	
     shared_ptr<OpenGLResourceLibrary> glResLib;
     unique_ptr<PublicRenderer> renderer;
     shared_ptr<PublicAssetLoader> assetLoader;
@@ -59,6 +61,34 @@ protected:
 
     std::string windowName;
     GameType type;
+	
+	//Change freely
+	int TARGET_FPS = 60;//having FPS < TPS makes DRAW_AFTER_MAX_X_UPDATES untrustable
+	int TARGET_TPS = 20;
+	int DRAW_AFTER_MAX_X_UPDATES = 1;
+	
+	//TIMES
+	double time;//seconds can read
+	double previousTime;//seconds can read
+	double deltaTime;//seconds can read
+	static constexpr double SLEEP_GUARD = 0.002;//seconds can read write
+	
+	//Dont touch theese
+	double updateChronometer;//seconds
+	double updateChronometerMoment;//seconds
+	double lastRenderTime;//seconds
+	double timeToNextAction;//seconds
+
+	//FPS/TPS measurement 
+	//Dont touch theese
+	double fpsAccumulator  = 0.0;
+	double tpsAccumulator  = 0.0;
+	int    fpsFrameCount   = 0;
+	int    tpsTickCount    = 0;
+	double measureInterval = 1.0; // measure every 1 second
+
+	double measuredFPS = 0.0;//can read
+	double measuredTPS = 0.0;//can read
 
 
     bool cursorCaptured;
@@ -78,8 +108,10 @@ public:
 
     virtual bool Update();
 	
-	bool EndUpdate();
-
+	virtual void RenderUpdate();
+	
+	virtual void TickUpdate();
+	
 	void DestroyEntity(Entity& entity);
 	
 	void DestroyEntity(shared_ptr<EntityHandle> entity);
@@ -89,6 +121,8 @@ public:
 	void RepositionUI();
 	
 	virtual void OnScreenResize(Vector<int, 2> newScreenSize, int WorldPixelScale = -1, int UIPixelScale = -1);
+	
+	void ToggleFullscreen();
 	
 	template<typename T>
 	std::span<T> GetAllComponents()

@@ -11,6 +11,7 @@ public:
     Vector<float, 3> right;
     Vector<float, 3> up;
     Vector<float, 3> forward;
+	Vector<float, 3> scale;
     Matrix<float, 4> transformMatrix;
 	
 	Transform();
@@ -24,6 +25,8 @@ public:
 	void Rotate(Vector<float, 3> axis, float angle);
 
 	void UpdateTransformationMatrix();
+	
+	Matrix<float, 4> GetUnscaledTransformationMatrix();
 
 	Vector<float, 3> rodriguesRotate(const Vector<float, 3>& v, const Vector<float, 3>& k, double theta);
 

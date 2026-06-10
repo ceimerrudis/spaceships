@@ -6,6 +6,7 @@
 #include "cat/Vector.h"
 #include "cat/Matrix.h"
 #include "cat/AdvancedMath.h"
+#include "cat/Random.h"
 
 #include "cat/Game.h"
 
@@ -41,3 +42,8 @@
 #include "cat/TextureType.h"
 #include "cat/InputSystem.h"
 #include "cat/Keys.h"
+
+extern bool CAT_DEBUG_LOG_SOURCE_IN_FILE;
+extern bool CAT_DEBUG_LOG_SOURCE;
+extern bool CAT_LOG_FPS;
+extern bool CAT_DEBUG_CULL_FACES;

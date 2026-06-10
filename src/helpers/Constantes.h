@@ -20,3 +20,4 @@ const int BREAK_KEY			= 15;
 const int ESCAPE_KEY		= 16;
 const int VIEWPOINT_CHANGE 	= 17;
 const int QUIT_GAME 		= 18;
+const int FULLSCREEN 		= 19;

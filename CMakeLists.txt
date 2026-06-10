@@ -34,9 +34,10 @@ find_library(CAT_LIB cat
     PATHS "${CMAKE_SOURCE_DIR}/dependencies/cat"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${CAT_LIB})
-
 if(DEBUG)
 	target_compile_options(${PROJECT_NAME} PRIVATE -g)
 	target_link_options(${PROJECT_NAME} PRIVATE -rdynamic)
 endif()
+
+target_link_options(${PROJECT_NAME} PRIVATE -Wl,-export-dynamic)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CAT_LIB})

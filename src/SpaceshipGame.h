@@ -28,8 +28,6 @@ using cat::EntityHandle;
 
 class SpaceshipGame : public cat::Game {
 public:
-	bool exitingLevel = false;
-	
 	GameState gameState = GameState::Menu;
 	GameData gameData;
 	
@@ -37,7 +35,9 @@ public:
 	uint64_t motomangFontAssetId;
 	
 	uint64_t cubeAssetId;
+	uint64_t cubeMapAssetId;
 	uint64_t spacehipAssetId;
+	uint64_t asteroidAssetId;
 	
 	uint64_t skyboxImageRight;   
 	uint64_t skyboxImageLeft;    
@@ -49,6 +49,8 @@ public:
 	uint64_t cockpitImage;
 	uint64_t instrumentImage; 
 	uint64_t indicatorImage;  
+	
+	void StartLevel();
 	
 	void CloseLevel();
 	
@@ -77,11 +79,13 @@ public:
    
     ~SpaceshipGame() override;
 
-    virtual bool Update() override;
+    void TickUpdate() override;
+	
+	void RenderUpdate() override;
 
     void ShootLaser(Ray fireRay);
 
-    void KillSpaceship(shared_ptr<EntityHandle> entity);
+    void KillSpaceship(shared_ptr<EntityHandle>& entity);
 	
 	virtual void OnScreenResize(cat::Vector<int, 2> newScreenSize, int WorldPixelScale, int UIPixelScale) override;
 

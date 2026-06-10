@@ -4,6 +4,13 @@ namespace cat
 {
 struct Screen
 {
+	bool isFullscreen;
+	//only filled correctly when fullscreened
+	int oldWidth;
+	int oldHeight;
+	int oldX;
+	int oldY;
+	
 	int width;//width in real pixels
 	int height;//width in real pixels
 	

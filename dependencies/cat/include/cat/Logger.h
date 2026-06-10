@@ -10,9 +10,6 @@
 
 namespace cat
 {
-extern bool CAT_DEBUG_LOG_SOURCE_IN_FILE;
-extern bool CAT_DEBUG_LOG_SOURCE;
-	
 struct Texture;
 template<typename T, unsigned int N>
 struct Matrix;

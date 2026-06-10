@@ -13,6 +13,6 @@ struct MeshData
 public:
     std::shared_ptr<Mesh> meshP;
 	
-	MeshData(Renderable& renderable, const std::shared_ptr<Mesh> mesh);
+	MeshData(Renderable& renderable, std::shared_ptr<Mesh> mesh);
 };
 }

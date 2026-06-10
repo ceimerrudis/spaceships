@@ -9,14 +9,21 @@ using std::weak_ptr;
 using namespace cat;
 
 SpaceshipGame::SpaceshipGame() : 
-Game(GameName, BaseScreenWidth, BaseScreenHeight, GameType::Game3D, false), 
-gameData(this)
+Game(GameName, BaseScreenWidth, BaseScreenHeight, GameType::Game3D, false)
 {
+	CAT_LOG_FPS = false;
+	TARGET_FPS = 60;
+	TARGET_TPS = 60;
+	DRAW_AFTER_MAX_X_UPDATES = 1;
+	CAT_DEBUG_CULL_FACES = true;
+	
 	mechanicalFontAssetId = assetLoader->LoadFont("mechanical-font/Mechanical-g5Y5.otf");
     motomangFontAssetId =assetLoader->LoadFont("motomang-font/Motomangucode-p7Jj1.ttf");
 
 	cubeAssetId = assetLoader->LoadObject("cube.obj");
-	spacehipAssetId = assetLoader->LoadObject("spaceship.obj");
+	cubeMapAssetId = assetLoader->LoadObject("cubemap_cube.obj");
+	spacehipAssetId = assetLoader->LoadObject("spaceship.obj", true);
+	asteroidAssetId = assetLoader->LoadObject("asteroid1.obj", true);
 
 	skyboxImageRight    = assetLoader->LoadImage("skybox2_c00.bmp");//right +x
     skyboxImageLeft     = assetLoader->LoadImage("skybox2_c01.bmp");//left -x
@@ -29,48 +36,70 @@ gameData(this)
     instrumentImage = assetLoader->LoadImage("instrument.png");
     indicatorImage  = assetLoader->LoadImage("indicator.png");
 	
+	gameData.shuttingDown = true;//ONLY ON GAME START
+	
 	InitKeybinds();
 }
 
-bool SpaceshipGame::Update()
+void SpaceshipGame::RenderUpdate()
 {
-	if(!Game::Update())
+	if(gameState == GameState::Game)
 	{
-		return false;
+		if(gameData.exitingLevel)
+		{
+			CloseLevel();
+			gameData.exitingLevel = false;
+		}else
+		{
+			gameData.GameRenderUpdate(this, *inputSystem);
+		}
 	}
-	
+}
+
+void SpaceshipGame::TickUpdate()
+{
 	if(inputSystem->IsKeyDown(QUIT_GAME))
 	{
 		quitingGame = true;
+	}
+	if(inputSystem->IsKeyDown(FULLSCREEN))
+	{
+		ToggleFullscreen();
 	}
 	if(inputSystem->IsKeyDown(20))
 	{
 		if(gameState == GameState::Menu)
 		{
-			InitGame();
-			gameState = GameState::Game;
+			StartLevel();
 		} else 
 		{
 			CloseLevel();
 		}
 	}
+	
 	if(gameState == GameState::Game)
 	{
-		if(exitingLevel)
+		if(gameData.exitingLevel)
 		{
-			exitingLevel = false;
+			gameData.exitingLevel = false;
 			CloseLevel();
+		}else
+		{
+			gameData.GameTickUpdate(this, *inputSystem);
 		}
-		gameData.GameUpdate(this, *inputSystem);
 	}
-	
-	return Game::EndUpdate();
+}
+
+void SpaceshipGame::StartLevel()
+{
+	gameData.Reset(this);
+	InitGame();
+	gameState = GameState::Game;
 }
 
 void SpaceshipGame::CloseLevel()
 {
-	gameData.Shutdown();
-	gameData = GameData(this);
+	gameData.Reset(this);
 	gameState = GameState::Menu;
 }
 
@@ -83,7 +112,7 @@ void SpaceshipGame::OnScreenResize(Vector<int, 2> newScreenSize, int WorldPixelS
 
 SpaceshipGame::~SpaceshipGame()
 {
-	
+	gameData.Shutdown(this);
 }
 
 void SpaceshipGame::ShootLaser(Ray fireRay)
@@ -91,7 +120,7 @@ void SpaceshipGame::ShootLaser(Ray fireRay)
     //physicsSystem->ShootLaser(fireRay, this);
 }
 
-void SpaceshipGame::KillSpaceship(shared_ptr<EntityHandle> entity)
+void SpaceshipGame::KillSpaceship(shared_ptr<EntityHandle>& entity)
 {
 	SpaceshipData& shipToKill = entity->entity.GetComponent<SpaceshipData>(this);
     if(!shipToKill.isAlive)
@@ -102,8 +131,9 @@ void SpaceshipGame::KillSpaceship(shared_ptr<EntityHandle> entity)
     if(shipToKill.isPlayer)
     {
         LOG("Player dead!");
-        exitingLevel = true;
+        gameData.exitingLevel = true;
     }
 	
 	DestroyEntity(entity);
+	entity.reset();
 }

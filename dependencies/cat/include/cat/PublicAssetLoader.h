@@ -20,7 +20,7 @@ public:
 
     uint64_t GetResourceID(uint64_t font_id, char32_t chr);
 
-	uint64_t LoadObject(const std::string& fileName);
+	uint64_t LoadObject(const std::string& fileName, bool flipWinding = false);
 
 	uint64_t LoadImage(const std::string& fileName);
 

@@ -1,4 +1,5 @@
 #include "SpaceshipGame.h"
+#include "cat/cat.h"
 #include <memory.h>
 
 using std::unique_ptr;
@@ -22,7 +23,7 @@ void SpaceshipGame::InitPlayer(shared_ptr<EntityHandle> playerEntity)
 	playerEntity->Init(this);
 	Entity entity = playerEntity->entity;
 	Transform& transform = entity.AddComponent<Transform>(this);
-	transform.position = Vector<float, 3>{5,0,0};
+	transform.position = Vector<float, 3>{0,0,0};
 	transform.UpdateTransformationMatrix();
 	
 	Renderable& renderable = entity.AddComponent<Renderable>(this, this, d3ObjectShaders);
@@ -30,7 +31,7 @@ void SpaceshipGame::InitPlayer(shared_ptr<EntityHandle> playerEntity)
 	entity.AddComponent<Shading>(this, this, renderable, meshData);
 
 	SpaceshipData& playerSpaceshipData = entity.AddComponent<SpaceshipData>(this);
-	entity.AddComponent<Collider>(this, Vector<float, 3>{1.0f, 1.0f, 1.0f}, Vector<float, 3>{1.0f, 1.0f, 1.0f});
+	entity.AddComponent<Collider>(this, Vector<float, 3>{0.0f, 0.0f, 0.0f}, Vector<float, 3>{1.0f, 1.0f, 1.0f});
 
 	playerSpaceshipData.isPlayer = true;
 	playerSpaceshipData.isAlive = true;
@@ -46,10 +47,10 @@ void SpaceshipGame::InitEnemy(shared_ptr<EntityHandle> enemyEntity)
 	someoneTransform.UpdateTransformationMatrix();
 	
 	Renderable& someone_renderable = someone.AddComponent<Renderable>(this, this, d3ObjectShaders);
-	MeshData& someone_meshData = someone.AddComponent<MeshData>(this, someone_renderable, assetLoader->GetMeshAsset(spacehipAssetId));
+	MeshData& someone_meshData = someone.AddComponent<MeshData>(this, someone_renderable, assetLoader->GetMeshAsset(cubeAssetId));
 	someone.AddComponent<Shading>(this, this, someone_renderable, someone_meshData);
 	someone.AddComponent<SpaceshipData>(this);
-	someone.AddComponent<Collider>(this, Vector<float, 3>{1.0f, 1.0f, 1.0f}, Vector<float, 3>{1.0f, 1.0f, 1.0f});
+	someone.AddComponent<Collider>(this, Vector<float, 3>{0.0f, 0.0f, 0.0f}, Vector<float, 3>{1.0f, 1.0f, 1.0f});
 }
 
 void SpaceshipGame::InitSkybox(shared_ptr<EntityHandle> skyboxEntity)
@@ -58,7 +59,7 @@ void SpaceshipGame::InitSkybox(shared_ptr<EntityHandle> skyboxEntity)
 	skyboxEntity->entity.AddComponent<Transform>(this);
 	skyboxEntity->entity.AddComponent<Renderable>(this, this, skyboxShaders);
 	Renderable& cubemap_renderable = skyboxEntity->entity.GetComponent<Renderable>(this);
-	skyboxEntity->entity.AddComponent<MeshData>(this, cubemap_renderable, assetLoader->GetMeshAsset(cubeAssetId));
+	skyboxEntity->entity.AddComponent<MeshData>(this, cubemap_renderable, assetLoader->GetMeshAsset(cubeMapAssetId));
 	skyboxEntity->entity.AddComponent<ModelTexture>(this, textureManager->AddCubemapTexture(
 	TextureType::CubeMap, 
 	std::array<uint64_t, 6>
@@ -131,25 +132,37 @@ shared_ptr<EntityHandle> indicatorEntity)
 void SpaceshipGame::InitAsteroid(shared_ptr<EntityHandle> asteroidEntity)
 {
 	asteroidEntity->Init(this);
+	Transform& transform = asteroidEntity->entity.AddComponent<Transform>(this);
+	Renderable& renderable = asteroidEntity->entity.AddComponent<Renderable>(this, this, d3ObjectShaders);
+	AsteroidData& asteroidData = asteroidEntity->entity.AddComponent<AsteroidData>(this);
+	//TODO fix asteroid generation and swap with model
+	MeshData& meshData = asteroidEntity->entity.AddComponent<MeshData>(this, renderable, assetLoader->GetMeshAsset(asteroidAssetId));//asteroidData.mesh
+	asteroidEntity->entity.AddComponent<Shading>(this, this, renderable, meshData);
+	asteroidEntity->entity.AddComponent<Collider>(this, Vector<float, 3>{0.0f, 0.0f, 0.0f}, Vector<float, 3>{5.0f, 5.0f, 5.0f});
+	
+	transform.position = Vector<float, 3>{ Random::RandomF(-200, 200), Random::RandomF(-200, 200), Random::RandomF(-200, 200)};
+	transform.scale = Vector<float, 3>{ Random::RandomF(10, 20), Random::RandomF(10, 20), Random::RandomF(10, 20)};
+	//transform.position = Vector<float, 3>{ 0.0, 0.0, 10.0 };
+	transform.UpdateTransformationMatrix();
 }
 
 void SpaceshipGame::InitGame()
 {
 	gameData.physicsSystem = std::make_shared<PhysicsSystem>();
-
+	
 	gameData.cameraUsed = std::make_shared<EntityHandle>();
 	InitCamera(gameData.cameraUsed);
 
 	gameData.spaceShips.push_back(std::make_shared<EntityHandle>());
 	gameData.playerId = gameData.spaceShips.size() - 1;
 	InitPlayer(gameData.spaceShips[gameData.playerId]);
-	
+
 	gameData.spaceShips.push_back(std::make_shared<EntityHandle>());
 	InitEnemy(gameData.spaceShips[gameData.spaceShips.size() - 1]);
-	
+
 	gameData.cubemapEntity = std::make_shared<EntityHandle>();
 	InitSkybox(gameData.cubemapEntity);
-	
+
 	gameData.cockpitEntity = std::make_shared<EntityHandle>();
 	gameData.throttleTextEntity = std::make_shared<EntityHandle>();
 	gameData.posTextEntity = std::make_shared<EntityHandle>();
@@ -157,9 +170,9 @@ void SpaceshipGame::InitGame()
 	gameData.indicatorEntity = std::make_shared<EntityHandle>();
 	InitCockpit(gameData.cockpitEntity, gameData.throttleTextEntity, gameData.posTextEntity, gameData.instrumentEntity, gameData.indicatorEntity);
 
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 20; i++)
     {
-        //shared_ptr<EntityHandle> asteroid = asteroids.emplace_back(std::make_shared<EntityHandle>());
-		//InitAsteroid(asteroid);
+        shared_ptr<EntityHandle> asteroid = gameData.asteroids.emplace_back(std::make_shared<EntityHandle>());
+		InitAsteroid(asteroid);
     }
 }

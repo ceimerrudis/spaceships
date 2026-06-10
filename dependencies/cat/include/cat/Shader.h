@@ -15,6 +15,8 @@ namespace cat
 #define PROJECTION_MATRIX "projection_matrix"
 #define TEXTURE_SLOT "texture_slot"
 
+#define DEBUG_COLOR "debug_color"
+
 enum UniformType {
   Float,
   Int,
